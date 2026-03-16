@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, X, Settings, Zap, CheckCircle, Clock, ArrowRight, Info } from 'lucide-react';
+import { ChevronDown, ChevronUp, X, Settings, Zap, CheckCircle, Clock, ArrowRight, Info, AlertTriangle, TrendingDown, Flame } from 'lucide-react';
 import Link from 'next/link';
 import { Tooltip } from './Tooltip';
 
@@ -94,6 +94,22 @@ export function AIAlertBanner() {
     });
   };
 
+  // Helper to get icon for alert type
+  const getAlertIcon = (alertId: string, size: number) => {
+    switch (alertId) {
+      case 'high-idle':
+        return <AlertTriangle size={size} />;
+      case 'low-focus':
+        return <TrendingDown size={size} />;
+      case 'burnout-risk':
+        return <Flame size={size} />;
+      case 'late-start':
+        return <Clock size={size} />;
+      default:
+        return null;
+    }
+  };
+
   const totalIssues = alertData.reduce((sum, section) => sum + section.count, 0);
 
   return (
@@ -103,33 +119,36 @@ export function AIAlertBanner() {
         <div className="inline-flex bg-bg-secondary border border-border-card rounded-[8px] p-0.5">
           <button
             onClick={() => setDemoState('alerts')}
-            className={`px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
               demoState === 'alerts'
                 ? 'bg-ai-gradient text-text-white shadow-sm'
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            ⚡ Alerts
+            <Zap size={14} />
+            Alerts
           </button>
           <button
             onClick={() => setDemoState('clear')}
-            className={`px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
               demoState === 'clear'
                 ? 'bg-ai-gradient text-text-white shadow-sm'
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            ✅ Clear
+            <CheckCircle size={14} />
+            Clear
           </button>
           <button
             onClick={() => setDemoState('pending')}
-            className={`px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
               demoState === 'pending'
                 ? 'bg-ai-gradient text-text-white shadow-sm'
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            ⏳ Pending
+            <Clock size={14} />
+            Pending
           </button>
         </div>
       </div>
@@ -179,16 +198,20 @@ export function AIAlertBanner() {
                 {totalIssues} performance issues detected
               </span>
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(248, 96, 96, 0.1)', color: '#F86060' }}>
+                <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(248, 96, 96, 0.1)', color: '#F86060' }}>
+                  {getAlertIcon(alertData[0].id, 12)}
                   {alertData[0].count} high idle
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(248, 96, 96, 0.1)', color: '#F86060' }}>
+                <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(248, 96, 96, 0.1)', color: '#F86060' }}>
+                  {getAlertIcon(alertData[1].id, 12)}
                   {alertData[1].count} low focus
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(255, 197, 61, 0.1)', color: '#F29937' }}>
+                <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(255, 197, 61, 0.1)', color: '#F29937' }}>
+                  {getAlertIcon(alertData[2].id, 12)}
                   {alertData[2].count} burnout risk
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(255, 197, 61, 0.1)', color: '#F29937' }}>
+                <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(255, 197, 61, 0.1)', color: '#F29937' }}>
+                  {getAlertIcon(alertData[3].id, 12)}
                   {alertData[3].count} late start
                 </span>
               </div>
@@ -217,7 +240,7 @@ export function AIAlertBanner() {
             <div className="border-t border-warning-amber/30 bg-bg-secondary">
               {alertData.map((section) => {
                 const isOpen = openSections.has(section.id);
-                const severityIcon = section.severity === 'high' ? '🔴' : '🟡';
+                const iconColor = section.severity === 'high' ? '#F86060' : '#F29937';
 
                 return (
                   <div key={section.id} className="border-b border-border-divider last:border-0">
@@ -225,9 +248,14 @@ export function AIAlertBanner() {
                       onClick={() => toggleSection(section.id)}
                       className="w-full px-5 py-3 flex items-center gap-3 hover:bg-bg-tertiary transition-all duration-200"
                     >
-                      <span className="text-[12px]">{severityIcon}</span>
+                      <span style={{ color: iconColor }}>
+                        {getAlertIcon(section.id, 14)}
+                      </span>
                       <span className="text-[12px] font-medium text-text-primary tracking-wide">
-                        {section.title} — {section.count}
+                        {section.title}
+                      </span>
+                      <span className="text-[10px] font-medium text-text-secondary bg-bg-tertiary px-1.5 py-0.5 rounded">
+                        {section.count}
                       </span>
                       <Tooltip content={section.tooltip}>
                         <Info className="w-3.5 h-3.5 text-text-secondary cursor-help" />

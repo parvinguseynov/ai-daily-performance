@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Info, Lock, AlertCircle, Check } from 'lucide-react';
+import { Info, Lock, AlertCircle, Check, AlertTriangle, TrendingDown, Flame, Clock } from 'lucide-react';
 import { SecondHeader } from '@/components/SecondHeader';
 import { Tooltip } from '@/components/Tooltip';
 
@@ -27,6 +27,23 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('ai');
   const [showToast, setShowToast] = useState(false);
   const [emailDigest, setEmailDigest] = useState(true);
+
+  // Helper to get icon for alert type
+  const getAlertIcon = (ruleId: string, size: number, color: string) => {
+    const iconProps = { size, style: { color } };
+    switch (ruleId) {
+      case 'high-idle':
+        return <AlertTriangle {...iconProps} />;
+      case 'low-focus':
+        return <TrendingDown {...iconProps} />;
+      case 'burnout-risk':
+        return <Flame {...iconProps} />;
+      case 'late-start':
+        return <Clock {...iconProps} />;
+      default:
+        return null;
+    }
+  };
 
   const [rules, setRules] = useState<ThresholdRule[]>([
     {
@@ -244,6 +261,10 @@ export default function SettingsPage() {
                     ? calculateLateStartTime(lateStartExpectedTime, lateStartThreshold)
                     : '';
 
+                  // Get icon color and background
+                  const iconColor = rule.severity === 'high' ? '#F86060' : '#F29937';
+                  const iconBg = rule.severity === 'high' ? 'rgba(248, 96, 96, 0.12)' : 'rgba(242, 153, 55, 0.12)';
+
                   return (
                     <div
                       key={rule.id}
@@ -255,7 +276,12 @@ export default function SettingsPage() {
                     >
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <span className="text-[20px]">{rule.emoji}</span>
+                          <div
+                            className="w-6 h-6 rounded-[6px] flex items-center justify-center"
+                            style={{ backgroundColor: iconBg }}
+                          >
+                            {getAlertIcon(rule.id, 16, iconColor)}
+                          </div>
                           <h3 className="text-[14px] font-medium text-text-primary">{rule.title}</h3>
                           <Tooltip content={rule.description}>
                             <Info className="w-4 h-4 text-text-secondary cursor-help" />
