@@ -40,7 +40,7 @@ export function Sidebar() {
       {/* Company Switcher */}
       <div className="px-5 py-4 border-b border-border-divider">
         <p className="text-[12px] font-medium text-text-secondary uppercase tracking-wider mb-2">
-          YOU'RE WORKING IN
+          YOU&apos;RE WORKING IN
         </p>
         <button className="w-full flex items-center justify-between p-2 bg-[#F7F9F9] border border-border-divider rounded-[8px] hover:bg-bg-tertiary transition-colors">
           <div className="flex items-center gap-2">
