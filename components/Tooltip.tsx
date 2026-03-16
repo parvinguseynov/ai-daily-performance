@@ -1,90 +1,64 @@
-'use client';
-
-import { ReactNode, useState, useRef, useEffect } from 'react';
+import { ReactNode } from 'react';
 
 interface TooltipProps {
   content: string;
   children: ReactNode;
-  delay?: number;
 }
 
-export function Tooltip({ content, children, delay = 150 }: TooltipProps) {
-  const [isVisible, setIsVisible] = useState(false);
-  const [position, setPosition] = useState<'top' | 'bottom'>('top');
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
-
-  const showTooltip = () => {
-    const id = setTimeout(() => {
-      // Check if tooltip would be cut off at top of viewport
-      if (triggerRef.current) {
-        const rect = triggerRef.current.getBoundingClientRect();
-        const spaceAbove = rect.top;
-        const spaceBelow = window.innerHeight - rect.bottom;
-
-        // If less than 100px above, show below instead
-        if (spaceAbove < 100 && spaceBelow > 100) {
-          setPosition('bottom');
-        } else {
-          setPosition('top');
-        }
-      }
-      setIsVisible(true);
-    }, delay);
-    setTimeoutId(id);
-  };
-
-  const hideTooltip = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    setIsVisible(false);
-  };
-
+export function Tooltip({ content, children }: TooltipProps) {
   return (
-    <div
-      ref={triggerRef}
-      className="relative inline-flex"
-      onMouseEnter={showTooltip}
-      onMouseLeave={hideTooltip}
-    >
+    <div className="tooltip-wrapper">
       {children}
-      {isVisible && (
-        <div
-          className={`absolute left-1/2 -translate-x-1/2 pointer-events-none ${
-            position === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'
-          }`}
-          style={{
-            zIndex: 1000,
-            maxWidth: '260px'
-          }}
-        >
-          <div
-            className="bg-[#23262F] text-white text-[12px] leading-[18px] rounded-[6px] py-2 px-3 shadow-lg"
-            style={{ fontFamily: 'var(--font-poppins)' }}
-          >
-            {content}
-            {/* Arrow pointing to trigger */}
-            <div
-              className={`absolute left-1/2 -translate-x-1/2 ${
-                position === 'top'
-                  ? 'top-full border-t-[#23262F]'
-                  : 'bottom-full border-b-[#23262F]'
-              }`}
-              style={{
-                width: 0,
-                height: 0,
-                borderLeft: '6px solid transparent',
-                borderRight: '6px solid transparent',
-                ...(position === 'top'
-                  ? { borderTop: '6px solid #23262F' }
-                  : { borderBottom: '6px solid #23262F' }
-                )
-              }}
-            />
-          </div>
-        </div>
-      )}
+      <div className="tooltip-bubble">
+        {content}
+        <div className="tooltip-arrow" />
+      </div>
+
+      <style jsx>{`
+        .tooltip-wrapper {
+          position: relative;
+          display: inline-flex;
+        }
+
+        .tooltip-bubble {
+          position: absolute;
+          bottom: calc(100% + 8px);
+          left: 50%;
+          transform: translateX(-50%);
+          background: #23262F;
+          color: white;
+          font-family: var(--font-poppins), sans-serif;
+          font-size: 12px;
+          line-height: 18px;
+          padding: 8px 12px;
+          border-radius: 6px;
+          width: max-content;
+          max-width: 240px;
+          white-space: normal;
+          z-index: 9999;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 150ms ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tooltip-wrapper:hover .tooltip-bubble {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .tooltip-arrow {
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-top: 5px solid #23262F;
+        }
+      `}</style>
     </div>
   );
 }
