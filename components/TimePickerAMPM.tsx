@@ -10,9 +10,9 @@ interface TimePickerAMPMProps {
 
 export function TimePickerAMPM({ value, onChange, disabled = false }: TimePickerAMPMProps) {
   // Parse 24-hour format to 12-hour components
-  const parse24Hour = (time: string) => {
+  const parse24Hour = (time: string): { hours12: number; minutes: number; period: 'AM' | 'PM' } => {
     const [hours24, minutes] = time.split(':').map(Number);
-    const period = hours24 >= 12 ? 'PM' : 'AM';
+    const period: 'AM' | 'PM' = hours24 >= 12 ? 'PM' : 'AM';
     const hours12 = hours24 === 0 ? 12 : hours24 > 12 ? hours24 - 12 : hours24;
     return { hours12, minutes, period };
   };
