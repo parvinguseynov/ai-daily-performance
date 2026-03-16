@@ -9,6 +9,7 @@ import {
   BarChart3,
   Users,
   Settings,
+  Star,
   FileText,
   ChevronDown,
   Moon,
@@ -23,6 +24,7 @@ const navItems = [
   { icon: BarChart3, label: 'Reporting', href: '#', iconColor: '#11A594' },
   { icon: Users, label: 'People', href: '#', iconColor: '#FFC53D' },
   { icon: Settings, label: 'Settings', href: '/settings', iconColor: '#F76809' },
+  { icon: Star, label: 'App & Web Ratings', href: '/app-ratings', iconColor: '#0091FF' },
   { icon: FileText, label: 'Logs', href: '#', iconColor: '#E93D81' },
 ];
 
