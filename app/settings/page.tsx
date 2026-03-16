@@ -73,7 +73,7 @@ export default function SettingsPage() {
       description: 'First activity after expected start + threshold',
       fields: [
         { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'Company work start time', type: 'time' },
-        { label: 'HOURS LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'Hours late = alert', type: 'number' },
+        { label: 'LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'Hours late = alert', type: 'number' },
       ],
     },
   ]);
@@ -100,11 +100,17 @@ export default function SettingsPage() {
   // Helper function to calculate late start alert time
   const calculateLateStartTime = (expectedStartTime: string, hoursThreshold: number): string => {
     const [hours, minutes] = expectedStartTime.split(':').map(Number);
-    const alertHour = hours + hoursThreshold;
-    const alertMinutes = minutes;
+
+    // Convert threshold to total minutes and add to start time
+    const thresholdMinutes = hoursThreshold * 60;
+    const totalMinutes = hours * 60 + minutes + thresholdMinutes;
+
+    // Calculate final hour and minute
+    const alertHour = Math.floor(totalMinutes / 60) % 24;
+    const alertMinutes = Math.floor(totalMinutes % 60);
 
     const period = alertHour >= 12 ? 'PM' : 'AM';
-    const displayHour = alertHour > 12 ? alertHour - 12 : alertHour;
+    const displayHour = alertHour > 12 ? alertHour - 12 : (alertHour === 0 ? 12 : alertHour);
 
     return `${displayHour}:${alertMinutes.toString().padStart(2, '0')} ${period}`;
   };
@@ -155,7 +161,7 @@ export default function SettingsPage() {
         description: 'First activity after expected start + threshold',
         fields: [
           { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'Company work start time', type: 'time' },
-          { label: 'HOURS LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'Hours late = alert', type: 'number' },
+          { label: 'LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'Hours late = alert', type: 'number' },
         ],
       },
     ]);
@@ -289,7 +295,8 @@ export default function SettingsPage() {
                                         type={field.type === 'time' ? 'time' : 'number'}
                                         value={field.value}
                                         onChange={(e) => updateField(rule.id, idx, field.type === 'time' ? e.target.value : parseFloat(e.target.value))}
-                                        step={field.unit === '×' ? 0.1 : 1}
+                                        step={field.unit === '×' ? 0.1 : (field.label === 'LATE THRESHOLD' ? 0.5 : 1)}
+                                        min={field.label === 'LATE THRESHOLD' ? 0.5 : undefined}
                                         className={`${field.type === 'time' ? 'w-32' : 'w-20'} px-3 py-1.5 border border-border-default rounded-element text-[12px] font-medium text-text-primary focus:border-primary-blue focus:outline-none`}
                                       />
                                       {field.unit && (
