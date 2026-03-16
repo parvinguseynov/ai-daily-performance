@@ -35,10 +35,10 @@ export default function SettingsPage() {
       title: 'High Idle',
       severity: 'high',
       enabled: true,
-      description: "Triggers when a user's idle time today exceeds the threshold AND is significantly higher than their personal 7-day average. Both conditions must be true to avoid false positives.",
+      description: "Alerts when idle% today exceeds threshold AND is more than X times the user's 7-day average.",
       fields: [
-        { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'The minimum idle percentage that must be exceeded today', type: 'number' },
-        { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: "How many times higher than the user's personal 7-day average", type: 'number' },
+        { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'Minimum idle% to trigger alert', type: 'number' },
+        { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: 'Multiplier vs personal average', type: 'number' },
       ],
     },
     {
@@ -47,9 +47,9 @@ export default function SettingsPage() {
       title: 'Low Focus',
       severity: 'high',
       enabled: true,
-      description: "Triggers when a user's focus time (time spent in productive apps) drops below the threshold. Focus is calculated as productive time ÷ total active time.",
+      description: 'Alerts when focus% (productive time ÷ active time) drops below threshold.',
       fields: [
-        { label: 'FOCUS % BELOW', value: 20, unit: '%', tooltip: 'Alert when focus drops below this percentage', type: 'number' },
+        { label: 'FOCUS % BELOW', value: 20, unit: '%', tooltip: 'Minimum focus% threshold', type: 'number' },
       ],
     },
     {
@@ -58,10 +58,10 @@ export default function SettingsPage() {
       title: 'Burnout Risk',
       severity: 'medium',
       enabled: true,
-      description: 'Triggers when a user works more than the hours threshold with very low idle time. This pattern indicates continuous non-stop work which may lead to burnout.',
+      description: 'Alerts when user works over X hours with idle below Y% — signs of non-stop work.',
       fields: [
-        { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Minimum hours worked in a single day', type: 'number' },
-        { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Maximum idle allowed — below this suggests non-stop work', type: 'number' },
+        { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Daily hours limit', type: 'number' },
+        { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Max idle% for burnout detection', type: 'number' },
       ],
     },
     {
@@ -70,10 +70,10 @@ export default function SettingsPage() {
       title: 'Late Start',
       severity: 'medium',
       enabled: true,
-      description: "Triggers when a user's first tracked activity is later than the expected start time plus the threshold. Uses a fixed company-wide start time, not individual averages.",
+      description: 'Alerts when first activity is after expected start time + threshold.',
       fields: [
-        { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'The company-wide expected work start time', type: 'time' },
-        { label: 'HOURS LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'How many hours after expected start counts as late', type: 'number' },
+        { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'Company-wide work start time', type: 'time' },
+        { label: 'HOURS LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'Hours after expected start = late', type: 'number' },
       ],
     },
   ]);
@@ -117,10 +117,10 @@ export default function SettingsPage() {
         title: 'High Idle',
         severity: 'high',
         enabled: true,
-        description: "Triggers when a user's idle time today exceeds the threshold AND is significantly higher than their personal 7-day average. Both conditions must be true to avoid false positives.",
+        description: "Alerts when idle% today exceeds threshold AND is more than X times the user's 7-day average.",
         fields: [
-          { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'The minimum idle percentage that must be exceeded today', type: 'number' },
-          { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: "How many times higher than the user's personal 7-day average", type: 'number' },
+          { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'Minimum idle% to trigger alert', type: 'number' },
+          { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: 'Multiplier vs personal average', type: 'number' },
         ],
       },
       {
@@ -129,9 +129,9 @@ export default function SettingsPage() {
         title: 'Low Focus',
         severity: 'high',
         enabled: true,
-        description: "Triggers when a user's focus time (time spent in productive apps) drops below the threshold. Focus is calculated as productive time ÷ total active time.",
+        description: 'Alerts when focus% (productive time ÷ active time) drops below threshold.',
         fields: [
-          { label: 'FOCUS % BELOW', value: 20, unit: '%', tooltip: 'Alert when focus drops below this percentage', type: 'number' },
+          { label: 'FOCUS % BELOW', value: 20, unit: '%', tooltip: 'Minimum focus% threshold', type: 'number' },
         ],
       },
       {
@@ -140,10 +140,10 @@ export default function SettingsPage() {
         title: 'Burnout Risk',
         severity: 'medium',
         enabled: true,
-        description: 'Triggers when a user works more than the hours threshold with very low idle time. This pattern indicates continuous non-stop work which may lead to burnout.',
+        description: 'Alerts when user works over X hours with idle below Y% — signs of non-stop work.',
         fields: [
-          { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Minimum hours worked in a single day', type: 'number' },
-          { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Maximum idle allowed — below this suggests non-stop work', type: 'number' },
+          { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Daily hours limit', type: 'number' },
+          { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Max idle% for burnout detection', type: 'number' },
         ],
       },
       {
@@ -152,10 +152,10 @@ export default function SettingsPage() {
         title: 'Late Start',
         severity: 'medium',
         enabled: true,
-        description: "Triggers when a user's first tracked activity is later than the expected start time plus the threshold. Uses a fixed company-wide start time, not individual averages.",
+        description: 'Alerts when first activity is after expected start time + threshold.',
         fields: [
-          { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'The company-wide expected work start time', type: 'time' },
-          { label: 'HOURS LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'How many hours after expected start counts as late', type: 'number' },
+          { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'Company-wide work start time', type: 'time' },
+          { label: 'HOURS LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'Hours after expected start = late', type: 'number' },
         ],
       },
     ]);
