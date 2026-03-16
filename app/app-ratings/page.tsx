@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, ChevronDown, X, Check, Sparkles, AlertTriangle, CheckCircle, Clock, PartyPopper } from 'lucide-react';
+import { Search, Filter, ChevronDown, X, Check, Sparkles, AlertTriangle, CheckCircle, Clock, CheckCircle2, XCircle, MinusCircle, Bot } from 'lucide-react';
 
 type DemoState = 'uncategorized' | 'categorized';
 type WizardStep = 1 | 2 | 3 | null;
@@ -578,10 +578,17 @@ export default function AppRatingsPage() {
 
               {/* STEP 3 - Done */}
               {wizardStep === 3 && (
-                <div className="text-center space-y-6 py-8">
-                  <div className="text-6xl">🎉</div>
+                <div className="text-center space-y-8 py-8">
+                  {/* Animated Success Checkmark */}
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#22C55E] to-[#10B981] flex items-center justify-center animate-scale-in shadow-lg">
+                      <CheckCircle2 size={40} className="text-white" strokeWidth={2.5} />
+                    </div>
+                  </div>
+
+                  {/* Title */}
                   <div>
-                    <h3 className="text-[20px] font-bold text-text-primary mb-2">
+                    <h3 className="text-[24px] font-bold text-text-primary mb-2">
                       All 1,526 apps categorized!
                     </h3>
                     <p className="text-[14px] text-text-secondary">
@@ -590,25 +597,64 @@ export default function AppRatingsPage() {
                   </div>
 
                   {/* Summary Cards */}
-                  <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-                    <div className="p-4 border-2 border-success-green rounded-[8px] bg-bg-mint">
-                      <div className="text-[24px] font-bold text-success-green">923</div>
-                      <div className="text-[12px] text-text-secondary">Productive</div>
+                  <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+                    {/* Productive Card */}
+                    <div className="bg-[#F0FDF4] border-l-[3px] border-success-green rounded-[12px] p-5 shadow-sm animate-fade-in-up" style={{ animationDelay: '0ms' }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle size={20} className="text-success-green" />
+                      </div>
+                      <div className="text-[28px] font-bold text-success-green mb-1">923</div>
+                      <div className="text-[13px] text-text-primary font-medium">Productive</div>
                     </div>
-                    <div className="p-4 border-2 rounded-[8px]" style={{ borderColor: '#F86060', backgroundColor: 'rgba(248, 96, 96, 0.05)' }}>
-                      <div className="text-[24px] font-bold" style={{ color: '#F86060' }}>514</div>
-                      <div className="text-[12px] text-text-secondary">Unproductive</div>
+
+                    {/* Unproductive Card */}
+                    <div className="bg-[#FEF2F2] border-l-[3px] rounded-[12px] p-5 shadow-sm animate-fade-in-up" style={{ borderLeftColor: '#F86060', animationDelay: '100ms' }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <XCircle size={20} style={{ color: '#F86060' }} />
+                      </div>
+                      <div className="text-[28px] font-bold mb-1" style={{ color: '#F86060' }}>514</div>
+                      <div className="text-[13px] text-text-primary font-medium">Unproductive</div>
                     </div>
-                    <div className="p-4 border-2 border-warning-amber rounded-[8px]" style={{ backgroundColor: 'rgba(242, 153, 55, 0.05)' }}>
-                      <div className="text-[24px] font-bold text-warning-amber">89</div>
-                      <div className="text-[12px] text-text-secondary">Neutral</div>
+
+                    {/* Neutral Card */}
+                    <div className="bg-[#FFF9F2] border-l-[3px] border-warning-amber rounded-[12px] p-5 shadow-sm animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <MinusCircle size={20} className="text-warning-amber" />
+                      </div>
+                      <div className="text-[28px] font-bold text-warning-amber mb-1">89</div>
+                      <div className="text-[13px] text-text-primary font-medium">Neutral</div>
                     </div>
                   </div>
 
+                  {/* Visual Progress Bar */}
+                  <div className="max-w-2xl mx-auto space-y-2 animate-fade-in" style={{ animationDelay: '300ms' }}>
+                    <div className="h-2 bg-bg-tertiary rounded-full overflow-hidden flex">
+                      <div
+                        className="h-full bg-success-green animate-progress-fill"
+                        style={{ width: '60.5%', animationDelay: '400ms' }}
+                      />
+                      <div
+                        className="h-full animate-progress-fill"
+                        style={{ width: '33.7%', backgroundColor: '#F86060', animationDelay: '500ms' }}
+                      />
+                      <div
+                        className="h-full bg-warning-amber animate-progress-fill"
+                        style={{ width: '5.8%', animationDelay: '600ms' }}
+                      />
+                    </div>
+                    <p className="text-[12px] text-text-secondary">
+                      60.5% Productive · 33.7% Unproductive · 5.8% Neutral
+                    </p>
+                  </div>
+
                   {/* Info Note */}
-                  <div className="flex items-center justify-center gap-2 text-[13px] text-text-secondary">
-                    <span>🤖</span>
-                    <span>AI-categorized items show a 🤖 badge for 7 days.</span>
+                  <div className="max-w-2xl mx-auto">
+                    <div className="flex items-start gap-3 p-4 bg-[#F2F9FF] border border-[#BAE6FD] rounded-[8px] text-left">
+                      <Bot size={16} className="text-primary-blue mt-0.5 flex-shrink-0" />
+                      <p className="text-[13px] text-text-secondary">
+                        AI-categorized items are marked for 7 days. You can change any category manually at any time.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
@@ -647,13 +693,13 @@ export default function AppRatingsPage() {
                 <>
                   <button
                     onClick={closeWizard}
-                    className="px-4 py-2 text-[14px] font-medium text-text-secondary hover:text-text-primary transition-colors"
+                    className="px-4 py-2 border border-border-default rounded-[8px] text-[14px] font-medium text-text-secondary hover:text-text-primary hover:border-border-card transition-colors"
                   >
                     Close
                   </button>
                   <button
                     onClick={completeWizard}
-                    className="px-5 py-2 bg-success-green text-white text-[14px] font-medium rounded-[8px] hover:bg-[#1EA34B] transition-colors flex items-center gap-2"
+                    className="px-5 py-2.5 bg-gradient-to-r from-[#0C62F9] to-[#7C3AED] text-white text-[14px] font-medium rounded-[8px] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
                   >
                     View Results
                     <span>→</span>
