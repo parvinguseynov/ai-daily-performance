@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Info, Lock, AlertCircle, Check, AlertTriangle, TrendingDown, Flame, Clock } from 'lucide-react';
 import { SecondHeader } from '@/components/SecondHeader';
 import { Tooltip } from '@/components/Tooltip';
+import { TimePickerAMPM } from '@/components/TimePickerAMPM';
 
 type Tab = 'profile' | 'delegation' | 'defaults' | 'ai' | 'activity';
 
@@ -27,6 +28,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('ai');
   const [showToast, setShowToast] = useState(false);
   const [emailDigest, setEmailDigest] = useState(true);
+  const [dailyAlertTime, setDailyAlertTime] = useState('17:00'); // 5:00 PM
 
   // Helper to get icon for alert type
   const getAlertIcon = (ruleId: string, size: number, color: string) => {
@@ -316,21 +318,28 @@ export default function SettingsPage() {
                                     {field.label}:
                                   </label>
                                   <Tooltip content={field.tooltip}>
-                                    <div className="relative">
-                                      <input
-                                        type={field.type === 'time' ? 'time' : 'number'}
-                                        value={field.value}
-                                        onChange={(e) => updateField(rule.id, idx, field.type === 'time' ? e.target.value : parseFloat(e.target.value))}
-                                        step={field.unit === '×' ? 0.1 : (field.label === 'LATE THRESHOLD' ? 0.5 : 1)}
-                                        min={field.label === 'LATE THRESHOLD' ? 0.5 : undefined}
-                                        className={`${field.type === 'time' ? 'w-32' : 'w-20'} px-3 py-1.5 border border-border-default rounded-element text-[12px] font-medium text-text-primary focus:border-primary-blue focus:outline-none`}
+                                    {field.type === 'time' ? (
+                                      <TimePickerAMPM
+                                        value={String(field.value)}
+                                        onChange={(newValue) => updateField(rule.id, idx, newValue)}
                                       />
-                                      {field.unit && (
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-text-secondary pointer-events-none">
-                                          {field.unit}
-                                        </span>
-                                      )}
-                                    </div>
+                                    ) : (
+                                      <div className="relative">
+                                        <input
+                                          type="number"
+                                          value={field.value}
+                                          onChange={(e) => updateField(rule.id, idx, parseFloat(e.target.value))}
+                                          step={field.unit === '×' ? 0.1 : (field.label === 'LATE THRESHOLD' ? 0.5 : 1)}
+                                          min={field.label === 'LATE THRESHOLD' ? 0.5 : undefined}
+                                          className="w-20 px-3 py-1.5 border border-border-default rounded-element text-[12px] font-medium text-text-primary focus:border-primary-blue focus:outline-none"
+                                        />
+                                        {field.unit && (
+                                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-text-secondary pointer-events-none">
+                                            {field.unit}
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
                                   </Tooltip>
                                 </div>
                               </div>
@@ -358,11 +367,9 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <label className="text-[12px] font-medium text-text-primary">Daily alert time:</label>
-                  <input
-                    type="time"
-                    value="17:00"
-                    readOnly
-                    className="px-4 py-2 border border-border-default rounded-element text-[12px] font-medium bg-bg-tertiary"
+                  <TimePickerAMPM
+                    value={dailyAlertTime}
+                    onChange={setDailyAlertTime}
                   />
                   <span className="text-[12px] text-text-secondary">Asia/Baku (UTC +4)</span>
                 </div>

@@ -175,7 +175,7 @@ export function AIAlertBanner() {
           </div>
           <div className="flex-1">
             <p className="text-[14px] font-medium text-text-primary">
-              First alert will be generated today at 5:00 PM. Requires 7 days of data.
+              First performance alert will be generated today at 5:00 PM. Note: <span className="font-semibold">High Idle</span> alerts require 7 days of tracking history for personal averages.
             </p>
           </div>
         </div>
