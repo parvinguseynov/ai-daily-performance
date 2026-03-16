@@ -222,7 +222,7 @@ export default function AppRatingsPage() {
             </div>
             <div className="flex-1">
               <p className="text-[14px] font-medium text-text-primary">
-                All apps categorized successfully. AI-categorized items show 🤖 badge for 7 days.
+                All apps categorized successfully. You can change any category manually at any time.
               </p>
             </div>
           </div>
@@ -645,16 +645,6 @@ export default function AppRatingsPage() {
                     <p className="text-[12px] text-text-secondary">
                       60.5% Productive · 33.7% Unproductive · 5.8% Neutral
                     </p>
-                  </div>
-
-                  {/* Info Note */}
-                  <div className="max-w-2xl mx-auto">
-                    <div className="flex items-start gap-3 p-4 bg-[#F2F9FF] border border-[#BAE6FD] rounded-[8px] text-left">
-                      <Bot size={16} className="text-primary-blue mt-0.5 flex-shrink-0" />
-                      <p className="text-[13px] text-text-secondary">
-                        AI-categorized items are marked for 7 days. You can change any category manually at any time.
-                      </p>
-                    </div>
                   </div>
                 </div>
               )}
