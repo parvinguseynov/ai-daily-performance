@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Info, Lock, AlertCircle, Check } from 'lucide-react';
 import { SecondHeader } from '@/components/SecondHeader';
+import { Tooltip } from '@/components/Tooltip';
 
 type Tab = 'profile' | 'delegation' | 'defaults' | 'ai' | 'activity';
 
@@ -12,11 +13,13 @@ interface ThresholdRule {
   title: string;
   severity: 'high' | 'medium';
   enabled: boolean;
+  description: string; // Tooltip for the rule card
   fields: {
     label: string;
-    value: number;
+    value: number | string;
     unit: string;
     tooltip: string;
+    type?: 'number' | 'time'; // Add field type
   }[];
 }
 
@@ -32,9 +35,10 @@ export default function SettingsPage() {
       title: 'High Idle',
       severity: 'high',
       enabled: true,
+      description: "Triggers when a user's idle time today exceeds the threshold AND is significantly higher than their personal 7-day average. Both conditions must be true to avoid false positives.",
       fields: [
-        { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'Trigger when idle percentage exceeds this threshold' },
-        { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: 'Multiply factor compared to 7-day average' },
+        { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'The minimum idle percentage that must be exceeded today', type: 'number' },
+        { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: "How many times higher than the user's personal 7-day average", type: 'number' },
       ],
     },
     {
@@ -43,8 +47,9 @@ export default function SettingsPage() {
       title: 'Low Focus',
       severity: 'high',
       enabled: true,
+      description: "Triggers when a user's focus time (time spent in productive apps) drops below the threshold. Focus is calculated as productive time ÷ total active time.",
       fields: [
-        { label: 'FOCUS % BELOW', value: 20, unit: '%', tooltip: 'Trigger when focus percentage drops below this threshold' },
+        { label: 'FOCUS % BELOW', value: 20, unit: '%', tooltip: 'Alert when focus drops below this percentage', type: 'number' },
       ],
     },
     {
@@ -53,9 +58,10 @@ export default function SettingsPage() {
       title: 'Burnout Risk',
       severity: 'medium',
       enabled: true,
+      description: 'Triggers when a user works more than the hours threshold with very low idle time. This pattern indicates continuous non-stop work which may lead to burnout.',
       fields: [
-        { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Trigger when worked hours exceed this amount' },
-        { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'AND idle percentage is below this threshold' },
+        { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Minimum hours worked in a single day', type: 'number' },
+        { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Maximum idle allowed — below this suggests non-stop work', type: 'number' },
       ],
     },
     {
@@ -64,8 +70,10 @@ export default function SettingsPage() {
       title: 'Late Start',
       severity: 'medium',
       enabled: true,
+      description: "Triggers when a user's first tracked activity is later than the expected start time plus the threshold. Uses a fixed company-wide start time, not individual averages.",
       fields: [
-        { label: 'HOURS LATER THAN USUAL', value: 3, unit: 'h', tooltip: 'Trigger when start time is this many hours later than usual' },
+        { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'The company-wide expected work start time', type: 'time' },
+        { label: 'HOURS LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'How many hours after expected start counts as late', type: 'number' },
       ],
     },
   ]);
@@ -76,7 +84,7 @@ export default function SettingsPage() {
     ));
   };
 
-  const updateField = (ruleId: string, fieldIndex: number, value: number) => {
+  const updateField = (ruleId: string, fieldIndex: number, value: number | string) => {
     setRules(rules.map(rule =>
       rule.id === ruleId
         ? {
@@ -89,6 +97,18 @@ export default function SettingsPage() {
     ));
   };
 
+  // Helper function to calculate late start alert time
+  const calculateLateStartTime = (expectedStartTime: string, hoursThreshold: number): string => {
+    const [hours, minutes] = expectedStartTime.split(':').map(Number);
+    const alertHour = hours + hoursThreshold;
+    const alertMinutes = minutes;
+
+    const period = alertHour >= 12 ? 'PM' : 'AM';
+    const displayHour = alertHour > 12 ? alertHour - 12 : alertHour;
+
+    return `${displayHour}:${alertMinutes.toString().padStart(2, '0')} ${period}`;
+  };
+
   const resetToDefaults = () => {
     setRules([
       {
@@ -97,9 +117,10 @@ export default function SettingsPage() {
         title: 'High Idle',
         severity: 'high',
         enabled: true,
+        description: "Triggers when a user's idle time today exceeds the threshold AND is significantly higher than their personal 7-day average. Both conditions must be true to avoid false positives.",
         fields: [
-          { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'Trigger when idle percentage exceeds this threshold' },
-          { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: 'Multiply factor compared to 7-day average' },
+          { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'The minimum idle percentage that must be exceeded today', type: 'number' },
+          { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: "How many times higher than the user's personal 7-day average", type: 'number' },
         ],
       },
       {
@@ -108,8 +129,9 @@ export default function SettingsPage() {
         title: 'Low Focus',
         severity: 'high',
         enabled: true,
+        description: "Triggers when a user's focus time (time spent in productive apps) drops below the threshold. Focus is calculated as productive time ÷ total active time.",
         fields: [
-          { label: 'FOCUS % BELOW', value: 20, unit: '%', tooltip: 'Trigger when focus percentage drops below this threshold' },
+          { label: 'FOCUS % BELOW', value: 20, unit: '%', tooltip: 'Alert when focus drops below this percentage', type: 'number' },
         ],
       },
       {
@@ -118,9 +140,10 @@ export default function SettingsPage() {
         title: 'Burnout Risk',
         severity: 'medium',
         enabled: true,
+        description: 'Triggers when a user works more than the hours threshold with very low idle time. This pattern indicates continuous non-stop work which may lead to burnout.',
         fields: [
-          { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Trigger when worked hours exceed this amount' },
-          { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'AND idle percentage is below this threshold' },
+          { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Minimum hours worked in a single day', type: 'number' },
+          { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Maximum idle allowed — below this suggests non-stop work', type: 'number' },
         ],
       },
       {
@@ -129,8 +152,10 @@ export default function SettingsPage() {
         title: 'Late Start',
         severity: 'medium',
         enabled: true,
+        description: "Triggers when a user's first tracked activity is later than the expected start time plus the threshold. Uses a fixed company-wide start time, not individual averages.",
         fields: [
-          { label: 'HOURS LATER THAN USUAL', value: 3, unit: 'h', tooltip: 'Trigger when start time is this many hours later than usual' },
+          { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'The company-wide expected work start time', type: 'time' },
+          { label: 'HOURS LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'How many hours after expected start counts as late', type: 'number' },
         ],
       },
     ]);
@@ -205,73 +230,91 @@ export default function SettingsPage() {
               </p>
 
               <div className="space-y-4">
-                {rules.map((rule) => (
-                  <div
-                    key={rule.id}
-                    className={`border rounded-card p-5 transition-all ${
-                      rule.enabled
-                        ? 'border-border-default bg-bg-secondary'
-                        : 'border-border-divider bg-bg-tertiary opacity-60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <span className="text-[20px]">{rule.emoji}</span>
-                        <h3 className="text-[14px] font-medium text-text-primary">{rule.title}</h3>
-                      </div>
-                      <button
-                        onClick={() => toggleRule(rule.id)}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                          rule.enabled ? 'bg-primary-blue' : 'bg-text-secondary/30'
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-text-white transition-transform ${
-                            rule.enabled ? 'translate-x-5' : 'translate-x-0.5'
-                          }`}
-                        />
-                      </button>
-                    </div>
+                {rules.map((rule) => {
+                  // Get Late Start values for helper text
+                  const lateStartExpectedTime = rule.id === 'late-start' ? String(rule.fields[0]?.value || '09:00') : '';
+                  const lateStartThreshold = rule.id === 'late-start' ? Number(rule.fields[1]?.value || 3) : 0;
+                  const lateStartAlertTime = rule.id === 'late-start'
+                    ? calculateLateStartTime(lateStartExpectedTime, lateStartThreshold)
+                    : '';
 
-                    {rule.enabled && (
-                      <div className="flex items-center gap-4 flex-wrap">
-                        {rule.fields.map((field, idx) => (
-                          <div key={idx} className="flex items-center gap-2">
-                            {idx > 0 && (
-                              <span className="text-[10px] font-medium text-text-secondary uppercase px-2">
-                                AND
-                              </span>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <label className="text-[10px] font-medium text-text-secondary uppercase tracking-wide">
-                                {field.label}:
-                              </label>
-                              <div className="relative group">
-                                <input
-                                  type="number"
-                                  value={field.value}
-                                  onChange={(e) => updateField(rule.id, idx, parseFloat(e.target.value))}
-                                  step={field.unit === '×' ? 0.1 : 1}
-                                  className="w-20 px-3 py-1.5 border border-border-default rounded-element text-[12px] font-medium text-text-primary focus:border-primary-blue focus:outline-none"
-                                />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-text-secondary pointer-events-none">
-                                  {field.unit}
-                                </span>
-                                {/* Tooltip */}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
-                                  <div className="bg-text-primary text-text-white text-[10px] rounded-element py-2 px-3 whitespace-nowrap">
-                                    {field.tooltip}
-                                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-text-primary" />
-                                  </div>
+                  return (
+                    <div
+                      key={rule.id}
+                      className={`border rounded-card p-5 transition-all ${
+                        rule.enabled
+                          ? 'border-border-default bg-bg-secondary'
+                          : 'border-border-divider bg-bg-tertiary opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-[20px]">{rule.emoji}</span>
+                          <h3 className="text-[14px] font-medium text-text-primary">{rule.title}</h3>
+                          <Tooltip content={rule.description}>
+                            <Info className="w-4 h-4 text-text-secondary cursor-help" />
+                          </Tooltip>
+                        </div>
+                        <button
+                          onClick={() => toggleRule(rule.id)}
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                            rule.enabled ? 'bg-primary-blue' : 'bg-text-secondary/30'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-text-white transition-transform ${
+                              rule.enabled ? 'translate-x-5' : 'translate-x-0.5'
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      {rule.enabled && (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-4 flex-wrap">
+                            {rule.fields.map((field, idx) => (
+                              <div key={idx} className="flex items-center gap-2">
+                                {idx > 0 && (
+                                  <span className="text-[10px] font-medium text-text-secondary uppercase px-2">
+                                    AND
+                                  </span>
+                                )}
+                                <div className="flex items-center gap-2">
+                                  <label className="text-[10px] font-medium text-text-secondary uppercase tracking-wide">
+                                    {field.label}:
+                                  </label>
+                                  <Tooltip content={field.tooltip}>
+                                    <div className="relative">
+                                      <input
+                                        type={field.type === 'time' ? 'time' : 'number'}
+                                        value={field.value}
+                                        onChange={(e) => updateField(rule.id, idx, field.type === 'time' ? e.target.value : parseFloat(e.target.value))}
+                                        step={field.unit === '×' ? 0.1 : 1}
+                                        className={`${field.type === 'time' ? 'w-32' : 'w-20'} px-3 py-1.5 border border-border-default rounded-element text-[12px] font-medium text-text-primary focus:border-primary-blue focus:outline-none`}
+                                      />
+                                      {field.unit && (
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-medium text-text-secondary pointer-events-none">
+                                          {field.unit}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </Tooltip>
                                 </div>
                               </div>
-                            </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+
+                          {/* Helper text for Late Start */}
+                          {rule.id === 'late-start' && (
+                            <p className="text-[11px] text-text-secondary italic">
+                              Alert if first activity is after {lateStartAlertTime}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, X, Settings, Zap, CheckCircle, Clock, ArrowRight } from 'lucide-react';
+import { ChevronDown, ChevronUp, X, Settings, Zap, CheckCircle, Clock, ArrowRight, Info } from 'lucide-react';
 import Link from 'next/link';
+import { Tooltip } from './Tooltip';
 
 type DemoState = 'alerts' | 'clear' | 'pending';
 
@@ -21,6 +22,7 @@ interface AlertSection {
   severity: 'high' | 'medium';
   users: AlertUser[];
   defaultOpen: boolean;
+  tooltip: string; // Tooltip description for the section
 }
 
 const alertData: AlertSection[] = [
@@ -30,6 +32,7 @@ const alertData: AlertSection[] = [
     count: 3,
     severity: 'high',
     defaultOpen: true,
+    tooltip: 'Idle time significantly above personal average',
     users: [
       { initials: 'PC', name: 'Princess Coronel', metric: '52% idle', usual: '15%', color: '#F29937' },
       { initials: 'RM', name: 'Ramiz Murshudov', metric: '48% idle', usual: '12%', color: '#22C55E' },
@@ -42,6 +45,7 @@ const alertData: AlertSection[] = [
     count: 1,
     severity: 'high',
     defaultOpen: false,
+    tooltip: 'Focus time critically low today',
     users: [
       { initials: 'NA', name: 'Nurlana Ahmadova', metric: '8% focus today', usual: '', color: '#0C62F9' },
     ],
@@ -52,6 +56,7 @@ const alertData: AlertSection[] = [
     count: 1,
     severity: 'medium',
     defaultOpen: false,
+    tooltip: 'Excessive hours with minimal breaks',
     users: [
       { initials: 'RH', name: 'Rinat Hajiyev', metric: '11h 4m worked, 8% idle', usual: '', color: '#F86060' },
     ],
@@ -62,9 +67,10 @@ const alertData: AlertSection[] = [
     count: 2,
     severity: 'medium',
     defaultOpen: false,
+    tooltip: 'First activity later than expected',
     users: [
-      { initials: 'EM', name: 'Elshad Muradov', metric: 'started 12:30 PM', usual: '9:15 AM', color: '#0C62F9' },
-      { initials: 'FI', name: 'Fidan Ismayilova', metric: 'started 1:00 PM', usual: '9:45 AM', color: '#F86060' },
+      { initials: 'EM', name: 'Elshad Muradov', metric: 'started 12:30 PM', usual: '9:00 AM', color: '#0C62F9' },
+      { initials: 'FI', name: 'Fidan Ismayilova', metric: 'started 1:00 PM', usual: '9:00 AM', color: '#F86060' },
     ],
   },
 ];
@@ -223,6 +229,9 @@ export function AIAlertBanner() {
                       <span className="text-[12px] font-medium text-text-primary tracking-wide">
                         {section.title} — {section.count}
                       </span>
+                      <Tooltip content={section.tooltip}>
+                        <Info className="w-3.5 h-3.5 text-text-secondary cursor-help" />
+                      </Tooltip>
                       <ChevronDown
                         className={`w-4 h-4 text-text-secondary ml-auto transition-transform duration-200 ${
                           isOpen ? 'rotate-180' : ''
@@ -257,7 +266,7 @@ export function AIAlertBanner() {
                               </span>
                               {user.usual && (
                                 <span className="text-[12px] text-text-secondary">
-                                  usual: {user.usual}
+                                  {section.id === 'late-start' ? 'expected by:' : 'usual:'} {user.usual}
                                 </span>
                               )}
                               <ArrowRight className="w-4 h-4 text-text-secondary" />
