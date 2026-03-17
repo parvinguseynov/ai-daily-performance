@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Info, Lock, AlertCircle, Check, AlertTriangle, TrendingDown, Flame, Clock } from 'lucide-react';
+import { Info, Lock, AlertCircle, Check, AlertTriangle, TrendingDown, Flame, Clock, TrendingUp } from 'lucide-react';
 import { SecondHeader } from '@/components/SecondHeader';
 import { Tooltip } from '@/components/Tooltip';
 import { TimePickerAMPM } from '@/components/TimePickerAMPM';
@@ -40,6 +40,8 @@ export default function SettingsPage() {
         return <TrendingDown {...iconProps} />;
       case 'burnout-risk':
         return <Flame {...iconProps} />;
+      case 'positive-highlights':
+        return <TrendingUp {...iconProps} />;
       default:
         return null;
     }
@@ -79,6 +81,20 @@ export default function SettingsPage() {
         { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Daily hours limit', type: 'number' },
         { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Max idle% for burnout', type: 'number' },
         { label: 'OVERTIME THRESHOLD', value: 120, unit: '%', tooltip: "Flags when today's hours exceed this percentage of the user's 30-day daily average", type: 'number' },
+      ],
+    },
+    {
+      id: 'positive-highlights',
+      emoji: '🟢',
+      title: 'Positive Highlights',
+      severity: 'medium',
+      enabled: true,
+      description: 'Recognizes users who had an outstanding productive day. Helps balance alerts with positive reinforcement.',
+      fields: [
+        { label: 'FOCUS % ABOVE', value: 90, unit: '%', tooltip: 'Minimum focus% to be recognized as outstanding', type: 'number' },
+        { label: 'PRODUCTIVITY % ABOVE', value: 80, unit: '%', tooltip: 'Minimum productivity% for recognition', type: 'number' },
+        { label: 'IDLE % BELOW', value: 5, unit: '%', tooltip: 'Maximum idle% — low idle indicates strong engagement', type: 'number' },
+        { label: 'MIN WORKED HOURS', value: 4, unit: 'h', tooltip: 'Minimum hours worked to qualify — prevents false positives from short sessions', type: 'number' },
       ],
     },
   ]);
@@ -137,6 +153,20 @@ export default function SettingsPage() {
           { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Daily hours limit', type: 'number' },
           { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Max idle% for burnout', type: 'number' },
           { label: 'OVERTIME THRESHOLD', value: 120, unit: '%', tooltip: "Flags when today's hours exceed this percentage of the user's 30-day daily average", type: 'number' },
+        ],
+      },
+      {
+        id: 'positive-highlights',
+        emoji: '🟢',
+        title: 'Positive Highlights',
+        severity: 'medium',
+        enabled: true,
+        description: 'Recognizes users who had an outstanding productive day. Helps balance alerts with positive reinforcement.',
+        fields: [
+          { label: 'FOCUS % ABOVE', value: 90, unit: '%', tooltip: 'Minimum focus% to be recognized as outstanding', type: 'number' },
+          { label: 'PRODUCTIVITY % ABOVE', value: 80, unit: '%', tooltip: 'Minimum productivity% for recognition', type: 'number' },
+          { label: 'IDLE % BELOW', value: 5, unit: '%', tooltip: 'Maximum idle% — low idle indicates strong engagement', type: 'number' },
+          { label: 'MIN WORKED HOURS', value: 4, unit: 'h', tooltip: 'Minimum hours worked to qualify — prevents false positives from short sessions', type: 'number' },
         ],
       },
     ]);
@@ -213,8 +243,8 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 {rules.map((rule) => {
                   // Get icon color and background
-                  const iconColor = rule.severity === 'high' ? '#F86060' : '#F29937';
-                  const iconBg = rule.severity === 'high' ? 'rgba(248, 96, 96, 0.12)' : 'rgba(242, 153, 55, 0.12)';
+                  const iconColor = rule.id === 'positive-highlights' ? '#22C55E' : (rule.severity === 'high' ? '#F86060' : '#F29937');
+                  const iconBg = rule.id === 'positive-highlights' ? 'rgba(34, 197, 94, 0.12)' : (rule.severity === 'high' ? 'rgba(248, 96, 96, 0.12)' : 'rgba(242, 153, 55, 0.12)');
 
                   return (
                     <div
@@ -257,7 +287,7 @@ export default function SettingsPage() {
                           <div className="flex items-center gap-4 flex-wrap">
                             {rule.fields.map((field, idx) => (
                               <div key={idx} className="flex items-center gap-2">
-                                {idx > 0 && (
+                                {idx > 0 && rule.id !== 'positive-highlights' && (
                                   <span className="text-[10px] font-medium text-text-secondary uppercase px-2">
                                     AND
                                   </span>
@@ -294,6 +324,15 @@ export default function SettingsPage() {
                               </div>
                             ))}
                           </div>
+
+                          {/* Helper note for Positive Highlights */}
+                          {rule.id === 'positive-highlights' && (
+                            <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-[8px] p-3 mt-3">
+                              <p className="text-[12px] text-text-primary">
+                                Users meeting <strong>ANY</strong> of the above conditions (with minimum hours worked) will be highlighted. This helps managers recognize strong performers alongside flagging concerns.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
