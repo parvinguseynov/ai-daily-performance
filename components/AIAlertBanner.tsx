@@ -11,8 +11,15 @@ interface UserDetail {
   name: string;
   color: string;
   metric: string;
-  avg7day: string;
-  avg30day: string;
+  avg7day?: string;
+  avg30day?: string;
+}
+
+interface DayData {
+  concerns: UserDetail[];
+  warnings: UserDetail[];
+  highlights: UserDetail[];
+  summary: string;
 }
 
 interface HistoryRow {
@@ -27,21 +34,105 @@ interface HistoryRow {
   status: 'viewed' | 'sent' | 'emailed';
 }
 
-const concernsData: UserDetail[] = [
-  { initials: 'PC', name: 'Princess Coronel', color: '#F29937', metric: '52% idle today', avg7day: '15%', avg30day: '18%' },
-  { initials: 'RM', name: 'Ramiz Murshudov', color: '#22C55E', metric: '48% idle today', avg7day: '12%', avg30day: '14%' },
-  { initials: 'SG', name: 'Saba Gogiberidze', color: '#7C3AED', metric: '44% idle today', avg7day: '18%', avg30day: '20%' },
-  { initials: 'NA', name: 'Nurlana Ahmadova', color: '#0C62F9', metric: '8% focus today', avg7day: '65%', avg30day: '60%' },
-];
-
-const warningsData: UserDetail[] = [
-  { initials: 'RH', name: 'Rinat Hajiyev', color: '#F86060', metric: '11h 4m worked, 8% idle', avg7day: '8h 45m', avg30day: '8h 30m' },
-];
-
-const highlightsData: UserDetail[] = [
-  { initials: 'EA', name: 'Eyyub Alakbarov', color: '#10B981', metric: '100% focus, 81.6% productive, 9h 58m worked', avg7day: '', avg30day: '' },
-  { initials: 'MF', name: 'Mirveli Fayazzade', color: '#8B5CF6', metric: '1.4% idle, 44% productive, 8h 58m worked', avg7day: '', avg30day: '' },
-];
+// Data for each day in the history
+const dayDataMap: { [key: number]: DayData } = {
+  0: { // Mar 1 (Today)
+    concerns: [
+      { initials: 'PC', name: 'Princess Coronel', color: '#F29937', metric: '52% idle', avg7day: '15%', avg30day: '18%' },
+      { initials: 'RM', name: 'Ramiz Murshudov', color: '#22C55E', metric: '48% idle', avg7day: '12%', avg30day: '14%' },
+      { initials: 'SG', name: 'Saba Gogiberidze', color: '#7C3AED', metric: '44% idle', avg7day: '18%', avg30day: '20%' },
+      { initials: 'NA', name: 'Nurlana Ahmadova', color: '#0C62F9', metric: '8% focus', avg7day: '65%', avg30day: '60%' },
+    ],
+    warnings: [
+      { initials: 'RH', name: 'Rinat Hajiyev', color: '#F86060', metric: '11h 4m worked', avg7day: '8% idle', avg30day: '130% of 30d avg 8h 30m' },
+    ],
+    highlights: [
+      { initials: 'EA', name: 'Eyyub Alakbarov', color: '#10B981', metric: '100% focus, 81.6% productive' },
+      { initials: 'MF', name: 'Mirveli Fayazzade', color: '#8B5CF6', metric: '1.4% idle, 44% productive' },
+    ],
+    summary: '5 of 5 active · 37h total · avg 7h 29m/person (30d avg: 7h 12m) · 58% productive'
+  },
+  1: { // Feb 28
+    concerns: [
+      { initials: 'RM', name: 'Ramiz Murshudov', color: '#22C55E', metric: '41% idle', avg7day: '14%', avg30day: '15%' },
+      { initials: 'PC', name: 'Princess Coronel', color: '#F29937', metric: '38% idle', avg7day: '16%', avg30day: '18%' },
+    ],
+    warnings: [],
+    highlights: [
+      { initials: 'EA', name: 'Eyyub Alakbarov', color: '#10B981', metric: '95% focus, 78% productive' },
+      { initials: 'MF', name: 'Mirveli Fayazzade', color: '#8B5CF6', metric: '2.1% idle' },
+      { initials: 'SG', name: 'Saba Gogiberidze', color: '#7C3AED', metric: '88% focus, 72% productive' },
+    ],
+    summary: '5 of 5 active · 35h total · avg 7h/person (30d avg: 7h 12m) · 62% productive'
+  },
+  2: { // Feb 27
+    concerns: [
+      { initials: 'PC', name: 'Princess Coronel', color: '#F29937', metric: '46% idle', avg7day: '15%', avg30day: '17%' },
+      { initials: 'NA', name: 'Nurlana Ahmadova', color: '#0C62F9', metric: '11% focus', avg7day: '60%', avg30day: '58%' },
+      { initials: 'EM', name: 'Elshad Muradov', color: '#EF4444', metric: '39% idle', avg7day: '22%', avg30day: '24%' },
+    ],
+    warnings: [
+      { initials: 'RH', name: 'Rinat Hajiyev', color: '#F86060', metric: '10h 30m worked', avg7day: '6% idle', avg30day: '124% of 30d avg 8h 30m' },
+    ],
+    highlights: [
+      { initials: 'EA', name: 'Eyyub Alakbarov', color: '#10B981', metric: '97% focus, 80% productive' },
+    ],
+    summary: '4 of 5 active · 28h total · avg 7h/person (30d avg: 7h 12m) · 55% productive'
+  },
+  3: { // Feb 26
+    concerns: [
+      { initials: 'NA', name: 'Nurlana Ahmadova', color: '#0C62F9', metric: '14% focus', avg7day: '58%', avg30day: '60%' },
+    ],
+    warnings: [],
+    highlights: [
+      { initials: 'RH', name: 'Rinat Hajiyev', color: '#F86060', metric: '92% focus, 76% productive' },
+      { initials: 'EA', name: 'Eyyub Alakbarov', color: '#10B981', metric: '98% focus, 85% productive' },
+      { initials: 'MF', name: 'Mirveli Fayazzade', color: '#8B5CF6', metric: '1.8% idle' },
+      { initials: 'SG', name: 'Saba Gogiberidze', color: '#7C3AED', metric: '91% focus' },
+    ],
+    summary: '5 of 5 active · 39h total · avg 7h 48m/person (30d avg: 7h 12m) · 64% productive'
+  },
+  4: { // Feb 25
+    concerns: [
+      { initials: 'PC', name: 'Princess Coronel', color: '#F29937', metric: '42% idle', avg7day: '16%', avg30day: '18%' },
+      { initials: 'RM', name: 'Ramiz Murshudov', color: '#22C55E', metric: '37% idle', avg7day: '13%', avg30day: '14%' },
+    ],
+    warnings: [],
+    highlights: [
+      { initials: 'EA', name: 'Eyyub Alakbarov', color: '#10B981', metric: '94% focus' },
+      { initials: 'RH', name: 'Rinat Hajiyev', color: '#F86060', metric: '79% productive' },
+    ],
+    summary: '5 of 5 active · 36h total · avg 7h 12m/person (30d avg: 7h 12m) · 60% productive'
+  },
+  5: { // Feb 24
+    concerns: [
+      { initials: 'PC', name: 'Princess Coronel', color: '#F29937', metric: '55% idle', avg7day: '17%', avg30day: '18%' },
+      { initials: 'RM', name: 'Ramiz Murshudov', color: '#22C55E', metric: '44% idle', avg7day: '13%', avg30day: '15%' },
+      { initials: 'SG', name: 'Saba Gogiberidze', color: '#7C3AED', metric: '41% idle', avg7day: '19%', avg30day: '20%' },
+      { initials: 'NA', name: 'Nurlana Ahmadova', color: '#0C62F9', metric: '9% focus', avg7day: '62%', avg30day: '60%' },
+      { initials: 'EM', name: 'Elshad Muradov', color: '#EF4444', metric: '36% idle', avg7day: '23%', avg30day: '24%' },
+    ],
+    warnings: [
+      { initials: 'RH', name: 'Rinat Hajiyev', color: '#F86060', metric: '12h 10m worked', avg7day: '5% idle', avg30day: '143% of 30d avg' },
+      { initials: 'EA', name: 'Eyyub Alakbarov', color: '#10B981', metric: '11h 20m worked', avg7day: '7% idle', avg30day: '126% of 30d avg' },
+    ],
+    highlights: [],
+    summary: '3 of 5 active · 22h total · avg 7h 20m/person (30d avg: 7h 12m) · 48% productive'
+  },
+  6: { // Feb 23
+    concerns: [
+      { initials: 'PC', name: 'Princess Coronel', color: '#F29937', metric: '43% idle', avg7day: '16%', avg30day: '17%' },
+      { initials: 'NA', name: 'Nurlana Ahmadova', color: '#0C62F9', metric: '15% focus', avg7day: '60%', avg30day: '59%' },
+    ],
+    warnings: [
+      { initials: 'RH', name: 'Rinat Hajiyev', color: '#F86060', metric: '10h 45m worked', avg7day: '9% idle', avg30day: '127% of 30d avg' },
+    ],
+    highlights: [
+      { initials: 'MF', name: 'Mirveli Fayazzade', color: '#8B5CF6', metric: '1.9% idle, 52% productive' },
+    ],
+    summary: '5 of 5 active · 34h total · avg 6h 48m/person (30d avg: 7h 12m) · 57% productive'
+  }
+};
 
 const historyData: HistoryRow[] = [
   { date: 'Mar 1 (Today)', isToday: true, active: '5 active', totalHours: '37h', productive: '58% prod', concerns: 4, warnings: 1, highlights: 2, status: 'viewed' },
@@ -52,6 +143,11 @@ const historyData: HistoryRow[] = [
   { date: 'Feb 24', active: '3 active', totalHours: '22h', productive: '48% prod', concerns: 5, warnings: 2, highlights: 0, status: 'emailed' },
   { date: 'Feb 23', active: '5 active', totalHours: '34h', productive: '57% prod', concerns: 2, warnings: 1, highlights: 1, status: 'emailed' },
 ];
+
+// Data for main dashboard cards (Today's alerts)
+const concernsData = dayDataMap[0].concerns;
+const warningsData = dayDataMap[0].warnings;
+const highlightsData = dayDataMap[0].highlights;
 
 export function AIAlertBanner() {
   const [demoState, setDemoState] = useState<DemoState>('all-alerts');
@@ -255,90 +351,91 @@ export function AIAlertBanner() {
             {/* Panel Body */}
             <div className="flex-1 overflow-y-auto flex flex-col" style={{ padding: '16px 24px', gap: '12px' }}>
               {/* Content based on selected row */}
-              {selectedHistoryRow === 0 && (
+              {selectedHistoryRow !== null && dayDataMap[selectedHistoryRow] && (
                 <>
                   {/* Concerns Card */}
-                  <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
-                        <AlertTriangle size={14} className="text-[#F86060]" />
+                  {dayDataMap[selectedHistoryRow].concerns.length > 0 && (
+                    <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
+                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
+                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
+                          <AlertTriangle size={14} className="text-[#F86060]" />
+                        </div>
+                        <span className="text-[13px] font-medium text-text-primary">Concerns</span>
+                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
+                          {dayDataMap[selectedHistoryRow].concerns.length}
+                        </span>
                       </div>
-                      <span className="text-[13px] font-medium text-text-primary">Concerns</span>
-                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
-                        4
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">PC</div>
-                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Princess Coronel</span>
-                        <span className="text-[12px] text-[#F86060]">52% idle</span>
-                        <span className="text-[11px] text-[#C5C5C5]">7d: 15% · 30d: 18%</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RM</div>
-                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Ramiz Murshudov</span>
-                        <span className="text-[12px] text-[#F86060]">48% idle</span>
-                        <span className="text-[11px] text-[#C5C5C5]">7d: 12% · 30d: 14%</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">SG</div>
-                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Saba Gogiberidze</span>
-                        <span className="text-[12px] text-[#F86060]">44% idle</span>
-                        <span className="text-[11px] text-[#C5C5C5]">7d: 18% · 30d: 20%</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">NA</div>
-                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Nurlana Ahmadova</span>
-                        <span className="text-[12px] text-[#F86060]">8% focus</span>
-                        <span className="text-[11px] text-[#C5C5C5]">7d: 65% · 30d: 60%</span>
+                      <div className="flex flex-col gap-1">
+                        {dayDataMap[selectedHistoryRow].concerns.map((user, index) => (
+                          <div key={index} className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0" style={{ backgroundColor: user.color }}>
+                              {user.initials}
+                            </div>
+                            <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>{user.name}</span>
+                            <span className="text-[12px] text-[#F86060]">{user.metric}</span>
+                            {user.avg7day && user.avg30day && (
+                              <span className="text-[11px] text-[#C5C5C5]">7d: {user.avg7day} · 30d: {user.avg30day}</span>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Warnings Card */}
-                  <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
-                        <Flame size={14} className="text-[#F29937]" />
+                  {dayDataMap[selectedHistoryRow].warnings.length > 0 && (
+                    <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
+                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
+                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
+                          <Flame size={14} className="text-[#F29937]" />
+                        </div>
+                        <span className="text-[13px] font-medium text-text-primary">Burnout</span>
+                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(242,153,55,0.12)', color: '#854F0B', padding: '2px 8px' }}>
+                          {dayDataMap[selectedHistoryRow].warnings.length}
+                        </span>
                       </div>
-                      <span className="text-[13px] font-medium text-text-primary">Burnout</span>
-                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(242,153,55,0.12)', color: '#854F0B', padding: '2px 8px' }}>
-                        1
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        {dayDataMap[selectedHistoryRow].warnings.map((user, index) => (
+                          <div key={index} className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0" style={{ backgroundColor: user.color }}>
+                              {user.initials}
+                            </div>
+                            <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>{user.name}</span>
+                            <span className="text-[12px] text-[#F29937]">{user.metric}</span>
+                            {user.avg7day && user.avg30day && (
+                              <span className="text-[11px] text-[#C5C5C5]">{user.avg7day} · {user.avg30day}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                      <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RH</div>
-                      <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Rinat Hajiyev</span>
-                      <span className="text-[12px] text-[#F29937]">11h 4m worked</span>
-                      <span className="text-[11px] text-[#C5C5C5]">8% idle · 130% of 30d avg</span>
-                    </div>
-                  </div>
+                  )}
 
                   {/* Highlights Card */}
-                  <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
-                        <TrendingUp size={14} className="text-[#22C55E]" />
+                  {dayDataMap[selectedHistoryRow].highlights.length > 0 && (
+                    <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
+                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
+                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
+                          <TrendingUp size={14} className="text-[#22C55E]" />
+                        </div>
+                        <span className="text-[13px] font-medium text-text-primary">Highlights</span>
+                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
+                          {dayDataMap[selectedHistoryRow].highlights.length}
+                        </span>
                       </div>
-                      <span className="text-[13px] font-medium text-text-primary">Highlights</span>
-                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
-                        2
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        {dayDataMap[selectedHistoryRow].highlights.map((user, index) => (
+                          <div key={index} className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0" style={{ backgroundColor: user.color }}>
+                              {user.initials}
+                            </div>
+                            <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>{user.name}</span>
+                            <span className="text-[12px] text-[#22C55E]">{user.metric}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">EA</div>
-                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Eyyub Alakbarov</span>
-                        <span className="text-[12px] text-[#22C55E]">100% focus, 81.6% productive</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">MF</div>
-                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Mirveli Fayazzade</span>
-                        <span className="text-[12px] text-[#22C55E]">1.4% idle, 44% productive</span>
-                      </div>
-                    </div>
-                  </div>
+                  )}
 
                   {/* Separator */}
                   <div className="h-[0.5px] bg-[#F4F5F6]" />
@@ -347,211 +444,7 @@ export function AIAlertBanner() {
                   <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2">
                       <BarChart3 size={16} className="text-[#378ADD]" />
-                      <span className="text-[12px] text-text-primary">5 of 5 active · 37h total · avg 7h 29m/person (30d avg: 7h 12m) · 58% productive</span>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Feb 28 */}
-              {selectedHistoryRow === 1 && (
-                <>
-                  <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
-                        <AlertTriangle size={14} className="text-[#F86060]" />
-                      </div>
-                      <span className="text-[13px] font-medium text-text-primary">Concerns</span>
-                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
-                        2
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RM</div>
-                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Ramiz M.</span>
-                        <span className="text-[12px] text-[#F86060]">41% idle</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">PC</div>
-                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Princess C.</span>
-                        <span className="text-[12px] text-[#F86060]">38% idle</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
-                        <TrendingUp size={14} className="text-[#22C55E]" />
-                      </div>
-                      <span className="text-[13px] font-medium text-text-primary">Highlights</span>
-                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
-                        3
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">EA</div>
-                        <span className="text-[12px] font-medium text-text-primary">Eyyub A.</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">MF</div>
-                        <span className="text-[12px] font-medium text-text-primary">Mirveli F.</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">SG</div>
-                        <span className="text-[12px] font-medium text-text-primary">Saba G.</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Separator */}
-                  <div className="h-[0.5px] bg-[#F4F5F6]" />
-
-                  {/* Summary */}
-                  <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2">
-                      <BarChart3 size={16} className="text-[#378ADD]" />
-                      <span className="text-[12px] text-text-primary">5 active · 35h total · 62% productive</span>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Feb 27 */}
-              {selectedHistoryRow === 2 && (
-                <>
-                  <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
-                        <AlertTriangle size={14} className="text-[#F86060]" />
-                      </div>
-                      <span className="text-[13px] font-medium text-text-primary">Concerns</span>
-                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
-                        3
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">PC</div>
-                        <span className="text-[12px] font-medium text-text-primary">Princess C.</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">NA</div>
-                        <span className="text-[12px] font-medium text-text-primary">Nurlana A.</span>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">EM</div>
-                        <span className="text-[12px] font-medium text-text-primary">Elshad M.</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
-                        <Flame size={14} className="text-[#F29937]" />
-                      </div>
-                      <span className="text-[13px] font-medium text-text-primary">Burnout</span>
-                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(242,153,55,0.12)', color: '#854F0B', padding: '2px 8px' }}>
-                        1
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                      <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RH</div>
-                      <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Rinat H.</span>
-                      <span className="text-[12px] text-[#F29937]">10h 30m worked</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
-                        <TrendingUp size={14} className="text-[#22C55E]" />
-                      </div>
-                      <span className="text-[13px] font-medium text-text-primary">Highlights</span>
-                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
-                        1
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
-                      <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">EA</div>
-                      <span className="text-[12px] font-medium text-text-primary">Eyyub A.</span>
-                    </div>
-                  </div>
-
-                  {/* Separator */}
-                  <div className="h-[0.5px] bg-[#F4F5F6]" />
-
-                  {/* Summary */}
-                  <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2">
-                      <BarChart3 size={16} className="text-[#378ADD]" />
-                      <span className="text-[12px] text-text-primary">4 active · 28h total · 55% productive</span>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Other days - simplified version */}
-              {selectedHistoryRow !== null && selectedHistoryRow > 2 && (
-                <>
-                  {historyData[selectedHistoryRow].concerns > 0 && (
-                    <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
-                          <AlertTriangle size={14} className="text-[#F86060]" />
-                        </div>
-                        <span className="text-[13px] font-medium text-text-primary">Concerns</span>
-                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
-                          {historyData[selectedHistoryRow].concerns}
-                        </span>
-                      </div>
-                      <span className="text-[12px] text-text-secondary">Various users flagged for performance concerns</span>
-                    </div>
-                  )}
-
-                  {historyData[selectedHistoryRow].warnings > 0 && (
-                    <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
-                          <Flame size={14} className="text-[#F29937]" />
-                        </div>
-                        <span className="text-[13px] font-medium text-text-primary">Burnout</span>
-                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(242,153,55,0.12)', color: '#854F0B', padding: '2px 8px' }}>
-                          {historyData[selectedHistoryRow].warnings}
-                        </span>
-                      </div>
-                      <span className="text-[12px] text-text-secondary">Burnout risk detected</span>
-                    </div>
-                  )}
-
-                  {historyData[selectedHistoryRow].highlights > 0 && (
-                    <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
-                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
-                          <TrendingUp size={14} className="text-[#22C55E]" />
-                        </div>
-                        <span className="text-[13px] font-medium text-text-primary">Highlights</span>
-                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
-                          {historyData[selectedHistoryRow].highlights}
-                        </span>
-                      </div>
-                      <span className="text-[12px] text-text-secondary">Strong performers recognized</span>
-                    </div>
-                  )}
-
-                  {/* Separator */}
-                  <div className="h-[0.5px] bg-[#F4F5F6]" />
-
-                  {/* Summary */}
-                  <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2">
-                      <BarChart3 size={16} className="text-[#378ADD]" />
-                      <span className="text-[12px] text-text-primary">
-                        {historyData[selectedHistoryRow].active} · {historyData[selectedHistoryRow].totalHours} · {historyData[selectedHistoryRow].productive}
-                      </span>
+                      <span className="text-[12px] text-text-primary">{dayDataMap[selectedHistoryRow].summary}</span>
                     </div>
                   </div>
                 </>
