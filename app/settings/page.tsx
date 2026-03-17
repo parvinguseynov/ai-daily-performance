@@ -40,8 +40,6 @@ export default function SettingsPage() {
         return <TrendingDown {...iconProps} />;
       case 'burnout-risk':
         return <Flame {...iconProps} />;
-      case 'late-start':
-        return <Clock {...iconProps} />;
       default:
         return null;
     }
@@ -81,18 +79,7 @@ export default function SettingsPage() {
       fields: [
         { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Daily hours limit', type: 'number' },
         { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Max idle% for burnout', type: 'number' },
-      ],
-    },
-    {
-      id: 'late-start',
-      emoji: '🟡',
-      title: 'Late Start',
-      severity: 'medium',
-      enabled: true,
-      description: 'First activity after expected start + threshold',
-      fields: [
-        { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'Company work start time', type: 'time' },
-        { label: 'LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'Hours late = alert', type: 'number' },
+        { label: 'OVERTIME THRESHOLD', value: 120, unit: '%', tooltip: "Flags when today's hours exceed this percentage of the user's 30-day daily average", type: 'number' },
       ],
     },
   ]);
@@ -114,24 +101,6 @@ export default function SettingsPage() {
           }
         : rule
     ));
-  };
-
-  // Helper function to calculate late start alert time
-  const calculateLateStartTime = (expectedStartTime: string, hoursThreshold: number): string => {
-    const [hours, minutes] = expectedStartTime.split(':').map(Number);
-
-    // Convert threshold to total minutes and add to start time
-    const thresholdMinutes = hoursThreshold * 60;
-    const totalMinutes = hours * 60 + minutes + thresholdMinutes;
-
-    // Calculate final hour and minute
-    const alertHour = Math.floor(totalMinutes / 60) % 24;
-    const alertMinutes = Math.floor(totalMinutes % 60);
-
-    const period = alertHour >= 12 ? 'PM' : 'AM';
-    const displayHour = alertHour > 12 ? alertHour - 12 : (alertHour === 0 ? 12 : alertHour);
-
-    return `${displayHour}:${alertMinutes.toString().padStart(2, '0')} ${period}`;
   };
 
   const resetToDefaults = () => {
@@ -169,18 +138,7 @@ export default function SettingsPage() {
         fields: [
           { label: 'WORKED HOURS ABOVE', value: 10, unit: 'h', tooltip: 'Daily hours limit', type: 'number' },
           { label: 'IDLE % BELOW', value: 10, unit: '%', tooltip: 'Max idle% for burnout', type: 'number' },
-        ],
-      },
-      {
-        id: 'late-start',
-        emoji: '🟡',
-        title: 'Late Start',
-        severity: 'medium',
-        enabled: true,
-        description: 'First activity after expected start + threshold',
-        fields: [
-          { label: 'EXPECTED START TIME', value: '09:00', unit: '', tooltip: 'Company work start time', type: 'time' },
-          { label: 'LATE THRESHOLD', value: 3, unit: 'h', tooltip: 'Hours late = alert', type: 'number' },
+          { label: 'OVERTIME THRESHOLD', value: 120, unit: '%', tooltip: "Flags when today's hours exceed this percentage of the user's 30-day daily average", type: 'number' },
         ],
       },
     ]);
@@ -256,13 +214,6 @@ export default function SettingsPage() {
 
               <div className="space-y-4">
                 {rules.map((rule) => {
-                  // Get Late Start values for helper text
-                  const lateStartExpectedTime = rule.id === 'late-start' ? String(rule.fields[0]?.value || '09:00') : '';
-                  const lateStartThreshold = rule.id === 'late-start' ? Number(rule.fields[1]?.value || 3) : 0;
-                  const lateStartAlertTime = rule.id === 'late-start'
-                    ? calculateLateStartTime(lateStartExpectedTime, lateStartThreshold)
-                    : '';
-
                   // Get icon color and background
                   const iconColor = rule.severity === 'high' ? '#F86060' : '#F29937';
                   const iconBg = rule.severity === 'high' ? 'rgba(248, 96, 96, 0.12)' : 'rgba(242, 153, 55, 0.12)';
@@ -345,13 +296,6 @@ export default function SettingsPage() {
                               </div>
                             ))}
                           </div>
-
-                          {/* Helper text for Late Start */}
-                          {rule.id === 'late-start' && (
-                            <p className="text-[11px] text-text-secondary italic">
-                              Alert if first activity is after {lateStartAlertTime}
-                            </p>
-                          )}
                         </div>
                       )}
                     </div>
@@ -390,6 +334,16 @@ export default function SettingsPage() {
                       }`}
                     />
                   </button>
+                </div>
+
+                <div className="flex items-center justify-between py-3 border-t border-border-divider opacity-50">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[12px] font-medium text-text-primary">Slack notifications</span>
+                    <span className="text-[11px] text-text-secondary">(Coming soon)</span>
+                  </div>
+                  <div className="relative inline-flex h-5 w-9 items-center rounded-full bg-text-secondary/30 cursor-not-allowed">
+                    <span className="inline-block h-3.5 w-3.5 transform rounded-full bg-text-white translate-x-0.5" />
+                  </div>
                 </div>
 
                 <div className="bg-bg-ice border border-primary-blue/20 rounded-card p-4 flex items-start gap-3">

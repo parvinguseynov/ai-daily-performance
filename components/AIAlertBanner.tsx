@@ -1,321 +1,339 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, X, Settings, Zap, CheckCircle, Clock, ArrowRight, Info, AlertTriangle, TrendingDown, Flame } from 'lucide-react';
+import { AlertTriangle, TrendingDown, Flame, TrendingUp, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
-import { Tooltip } from './Tooltip';
 
-type DemoState = 'alerts' | 'clear' | 'pending';
+type DemoState = 'all-alerts' | 'warnings-only' | 'clean-day' | 'history';
 
-interface AlertUser {
+interface UserDetail {
   initials: string;
   name: string;
-  metric: string;
-  usual: string;
   color: string;
+  metric: string;
+  avg7day: string;
+  avg30day: string;
 }
 
-interface AlertSection {
-  id: string;
-  title: string;
-  count: number;
-  severity: 'high' | 'medium';
-  users: AlertUser[];
-  defaultOpen: boolean;
-  tooltip: string; // Tooltip description for the section
+interface HistoryRow {
+  date: string;
+  isToday?: boolean;
+  active: string;
+  totalHours: string;
+  productive: string;
+  concerns: number;
+  warnings: number;
+  highlights: number;
 }
 
-const alertData: AlertSection[] = [
-  {
-    id: 'high-idle',
-    title: 'HIGH IDLE',
-    count: 3,
-    severity: 'high',
-    defaultOpen: true,
-    tooltip: 'Idle time significantly above personal average',
-    users: [
-      { initials: 'PC', name: 'Princess Coronel', metric: '52% idle', usual: '15%', color: '#F29937' },
-      { initials: 'RM', name: 'Ramiz Murshudov', metric: '48% idle', usual: '12%', color: '#22C55E' },
-      { initials: 'SG', name: 'Saba Gogiberidze', metric: '44% idle', usual: '18%', color: '#7C3AED' },
-    ],
-  },
-  {
-    id: 'low-focus',
-    title: 'LOW FOCUS',
-    count: 1,
-    severity: 'high',
-    defaultOpen: false,
-    tooltip: 'Focus time critically low today',
-    users: [
-      { initials: 'NA', name: 'Nurlana Ahmadova', metric: '8% focus today', usual: '', color: '#0C62F9' },
-    ],
-  },
-  {
-    id: 'burnout-risk',
-    title: 'BURNOUT RISK',
-    count: 1,
-    severity: 'medium',
-    defaultOpen: false,
-    tooltip: 'Excessive hours with minimal breaks',
-    users: [
-      { initials: 'RH', name: 'Rinat Hajiyev', metric: '11h 4m worked, 8% idle', usual: '', color: '#F86060' },
-    ],
-  },
-  {
-    id: 'late-start',
-    title: 'LATE START',
-    count: 2,
-    severity: 'medium',
-    defaultOpen: false,
-    tooltip: 'First activity later than expected',
-    users: [
-      { initials: 'EM', name: 'Elshad Muradov', metric: 'started 12:30 PM', usual: '9:00 AM', color: '#0C62F9' },
-      { initials: 'FI', name: 'Fidan Ismayilova', metric: 'started 1:00 PM', usual: '9:00 AM', color: '#F86060' },
-    ],
-  },
+const concernsData: UserDetail[] = [
+  { initials: 'PC', name: 'Princess Coronel', color: '#F29937', metric: '52% idle today', avg7day: '15%', avg30day: '18%' },
+  { initials: 'RM', name: 'Ramiz Murshudov', color: '#22C55E', metric: '48% idle today', avg7day: '12%', avg30day: '14%' },
+  { initials: 'SG', name: 'Saba Gogiberidze', color: '#7C3AED', metric: '44% idle today', avg7day: '18%', avg30day: '20%' },
+  { initials: 'NA', name: 'Nurlana Ahmadova', color: '#0C62F9', metric: '8% focus today', avg7day: '65%', avg30day: '60%' },
+];
+
+const warningsData: UserDetail[] = [
+  { initials: 'RH', name: 'Rinat Hajiyev', color: '#F86060', metric: '11h 4m worked, 8% idle', avg7day: '8h 45m', avg30day: '8h 30m' },
+];
+
+const highlightsData: UserDetail[] = [
+  { initials: 'EA', name: 'Eyyub Alakbarov', color: '#10B981', metric: '100% focus, 81.6% productive, 9h 58m worked', avg7day: '', avg30day: '' },
+  { initials: 'MF', name: 'Mirveli Fayazzade', color: '#8B5CF6', metric: '1.4% idle, 44% productive, 8h 58m worked', avg7day: '', avg30day: '' },
+];
+
+const historyData: HistoryRow[] = [
+  { date: 'Mar 1 (Today)', isToday: true, active: '5 active', totalHours: '37h total', productive: '58% productive', concerns: 4, warnings: 1, highlights: 2 },
+  { date: 'Feb 28', active: '5 active', totalHours: '35h total', productive: '62% productive', concerns: 2, warnings: 0, highlights: 3 },
+  { date: 'Feb 27', active: '4 active', totalHours: '28h total', productive: '55% productive', concerns: 3, warnings: 1, highlights: 1 },
+  { date: 'Feb 26', active: '5 active', totalHours: '39h total', productive: '64% productive', concerns: 1, warnings: 0, highlights: 4 },
+  { date: 'Feb 25', active: '5 active', totalHours: '36h total', productive: '60% productive', concerns: 2, warnings: 0, highlights: 2 },
+  { date: 'Feb 24', active: '3 active', totalHours: '22h total', productive: '48% productive', concerns: 5, warnings: 2, highlights: 0 },
+  { date: 'Feb 23', active: '5 active', totalHours: '34h total', productive: '57% productive', concerns: 2, warnings: 1, highlights: 1 },
 ];
 
 export function AIAlertBanner() {
-  const [demoState, setDemoState] = useState<DemoState>('alerts');
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [openSections, setOpenSections] = useState<Set<string>>(
-    new Set(alertData.filter(s => s.defaultOpen).map(s => s.id))
-  );
+  const [demoState, setDemoState] = useState<DemoState>('all-alerts');
+  const [expandedConcerns, setExpandedConcerns] = useState(false);
+  const [expandedWarnings, setExpandedWarnings] = useState(false);
+  const [expandedHighlights, setExpandedHighlights] = useState(false);
 
-  const toggleSection = (id: string) => {
-    setOpenSections(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
-
-  // Helper to get icon for alert type
-  const getAlertIcon = (alertId: string, size: number) => {
-    switch (alertId) {
-      case 'high-idle':
-        return <AlertTriangle size={size} />;
-      case 'low-focus':
-        return <TrendingDown size={size} />;
-      case 'burnout-risk':
-        return <Flame size={size} />;
-      case 'late-start':
-        return <Clock size={size} />;
-      default:
-        return null;
-    }
-  };
-
-  const totalIssues = alertData.reduce((sum, section) => sum + section.count, 0);
+  const showConcerns = demoState === 'all-alerts';
+  const showWarnings = demoState === 'all-alerts' || demoState === 'warnings-only';
+  const showHighlights = demoState === 'all-alerts';
+  const showBlue = demoState !== 'history';
+  const showHistory = demoState === 'history';
 
   return (
     <div className="mb-6">
       {/* Demo State Switcher */}
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-4">
         <div className="inline-flex bg-bg-secondary border border-border-card rounded-[8px] p-0.5">
           <button
-            onClick={() => setDemoState('alerts')}
+            onClick={() => setDemoState('all-alerts')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
-              demoState === 'alerts'
+              demoState === 'all-alerts'
                 ? 'bg-ai-gradient text-text-white shadow-sm'
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            <Zap size={14} />
-            Alerts
+            ⚡ All Alerts
           </button>
           <button
-            onClick={() => setDemoState('clear')}
+            onClick={() => setDemoState('warnings-only')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
-              demoState === 'clear'
+              demoState === 'warnings-only'
                 ? 'bg-ai-gradient text-text-white shadow-sm'
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            <CheckCircle size={14} />
-            Clear
+            ⚠️ Warnings Only
           </button>
           <button
-            onClick={() => setDemoState('pending')}
+            onClick={() => setDemoState('clean-day')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
-              demoState === 'pending'
+              demoState === 'clean-day'
                 ? 'bg-ai-gradient text-text-white shadow-sm'
                 : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            <Clock size={14} />
-            Pending
+            ✅ Clean Day
+          </button>
+          <button
+            onClick={() => setDemoState('history')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
+              demoState === 'history'
+                ? 'bg-ai-gradient text-text-white shadow-sm'
+                : 'text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            📊 History
           </button>
         </div>
       </div>
 
-      {/* Clear State */}
-      {demoState === 'clear' && (
-        <div className="bg-bg-mint border border-success-green rounded-[8px] p-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-success-green/20 rounded-full flex items-center justify-center">
-            <CheckCircle className="w-5 h-5 text-success-green" />
+      {/* History View */}
+      {showHistory && (
+        <div className="bg-white border border-border-card rounded-[12px] overflow-hidden shadow-card">
+          <div className="px-6 py-4 border-b border-border-divider">
+            <h3 className="text-[16px] font-semibold text-text-primary">Alert History — Last 7 Days</h3>
           </div>
-          <div className="flex-1">
-            <p className="text-[14px] font-medium text-text-primary">
-              No anomalies detected. Team performance is within normal range.
-            </p>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="h-[44px] bg-bg-secondary border-b border-border-divider">
+                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Date</th>
+                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Summary</th>
+                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Concerns</th>
+                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Warnings</th>
+                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Highlights</th>
+                </tr>
+              </thead>
+              <tbody>
+                {historyData.map((row, index) => (
+                  <tr
+                    key={index}
+                    className={`h-[56px] border-b border-border-divider last:border-0 hover:bg-bg-tertiary transition-colors cursor-pointer ${
+                      row.isToday ? 'border-l-[3px] border-l-primary-blue' : ''
+                    }`}
+                  >
+                    <td className="px-6 text-[14px] font-medium text-text-primary">{row.date}</td>
+                    <td className="px-6 text-[13px] text-text-secondary">
+                      {row.active}, {row.totalHours}, {row.productive}
+                    </td>
+                    <td className="px-6">
+                      {row.concerns > 0 ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#FEF2F2] text-[#F86060]">
+                          {row.concerns} users flagged
+                        </span>
+                      ) : (
+                        <span className="text-[12px] text-text-secondary">None</span>
+                      )}
+                    </td>
+                    <td className="px-6">
+                      {row.warnings > 0 ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#FFF9F2] text-[#F29937]">
+                          {row.warnings} burnout risk{row.warnings > 1 ? 's' : ''}
+                        </span>
+                      ) : (
+                        <span className="text-[12px] text-text-secondary">None</span>
+                      )}
+                    </td>
+                    <td className="px-6">
+                      {row.highlights > 0 ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#22C55E]">
+                          {row.highlights} strong performer{row.highlights > 1 ? 's' : ''}
+                        </span>
+                      ) : (
+                        <span className="text-[12px] text-text-secondary">None</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
-      {/* Pending State */}
-      {demoState === 'pending' && (
-        <div className="bg-bg-tertiary border border-border-card rounded-[8px] p-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-bg-secondary rounded-full flex items-center justify-center">
-            <Clock className="w-5 h-5 text-text-secondary" />
-          </div>
-          <div className="flex-1">
-            <p className="text-[14px] font-medium text-text-primary">
-              First performance alert will be generated today at 5:00 PM. Note: <span className="font-semibold">High Idle</span> alerts require 7 days of tracking history for personal averages.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Alerts State */}
-      {demoState === 'alerts' && (
-        <div className="bg-bg-linen border border-warning-amber rounded-[8px] overflow-hidden shadow-card">
-          {/* Collapsed Header */}
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full min-h-[44px] px-4 py-2 flex items-center gap-3 hover:bg-bg-linen/80 transition-all duration-200"
-          >
-            <div className="w-8 h-8 bg-ai-gradient rounded-full flex items-center justify-center shadow-sm">
-              <Zap className="w-4 h-4 text-text-white" fill="currentColor" />
-            </div>
-
-            <div className="flex-1 flex items-center gap-2 text-left flex-wrap">
-              <span className="text-[14px] font-medium text-text-primary">
-                {totalIssues} performance issues detected
-              </span>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(248, 96, 96, 0.1)', color: '#F86060' }}>
-                  {getAlertIcon(alertData[0].id, 12)}
-                  {alertData[0].count} high idle
-                </span>
-                <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(248, 96, 96, 0.1)', color: '#F86060' }}>
-                  {getAlertIcon(alertData[1].id, 12)}
-                  {alertData[1].count} low focus
-                </span>
-                <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(255, 197, 61, 0.1)', color: '#F29937' }}>
-                  {getAlertIcon(alertData[2].id, 12)}
-                  {alertData[2].count} burnout risk
-                </span>
-                <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full" style={{ backgroundColor: 'rgba(255, 197, 61, 0.1)', color: '#F29937' }}>
-                  {getAlertIcon(alertData[3].id, 12)}
-                  {alertData[3].count} late start
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] font-normal text-text-secondary">Today, 5:00 PM</span>
-              {isExpanded ? (
-                <ChevronUp className="w-4 h-4 text-text-secondary" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-text-secondary" />
-              )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                className="p-1 hover:bg-warning-amber/30 rounded transition-colors duration-200"
-              >
-                <X className="w-4 h-4 text-text-secondary" />
-              </button>
-            </div>
-          </button>
-
-          {/* Expanded Content */}
-          {isExpanded && (
-            <div className="border-t border-warning-amber/30 bg-bg-secondary">
-              {alertData.map((section) => {
-                const isOpen = openSections.has(section.id);
-                const iconColor = section.severity === 'high' ? '#F86060' : '#F29937';
-
-                return (
-                  <div key={section.id} className="border-b border-border-divider last:border-0">
-                    <button
-                      onClick={() => toggleSection(section.id)}
-                      className="w-full px-5 py-3 flex items-center gap-3 hover:bg-bg-tertiary transition-all duration-200"
-                    >
-                      <span style={{ color: iconColor }}>
-                        {getAlertIcon(section.id, 14)}
-                      </span>
-                      <span className="text-[12px] font-medium text-text-primary tracking-wide">
-                        {section.title}
-                      </span>
-                      <span className="text-[10px] font-medium text-text-secondary bg-bg-tertiary px-1.5 py-0.5 rounded">
-                        {section.count}
-                      </span>
-                      <Tooltip content={section.tooltip}>
-                        <Info className="w-3.5 h-3.5 text-text-secondary cursor-help" />
-                      </Tooltip>
-                      <ChevronDown
-                        className={`w-4 h-4 text-text-secondary ml-auto transition-transform duration-200 ${
-                          isOpen ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </button>
-
-                    {isOpen && (
-                      <div className="bg-bg-secondary animate-accordion">
-                        {section.users.map((user, idx) => (
-                          <div
-                            key={idx}
-                            className="px-5 py-3 flex items-center gap-3 hover:bg-bg-tertiary transition-colors duration-200 border-t border-border-divider"
-                          >
-                            <div
-                              className="w-[32px] h-[32px] rounded-full flex items-center justify-center text-text-white text-[12px] font-medium"
-                              style={{ backgroundColor: user.color }}
-                            >
-                              {user.initials}
-                            </div>
-                            <div className="flex-1">
-                              <span className="text-[12px] font-medium text-text-primary hover:text-primary-blue cursor-pointer">
-                                {user.name}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <span
-                                className="text-[12px] font-medium"
-                                style={{ color: section.severity === 'high' ? '#F86060' : '#F29937' }}
-                              >
-                                {user.metric}
-                              </span>
-                              {user.usual && (
-                                <span className="text-[12px] text-text-secondary">
-                                  {section.id === 'late-start' ? 'expected by:' : 'usual:'} {user.usual}
-                                </span>
-                              )}
-                              <ArrowRight className="w-4 h-4 text-text-secondary" />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-
-              {/* Footer */}
-              <div className="px-5 py-3 bg-bg-tertiary border-t border-border-divider">
-                <Link
-                  href="/settings"
-                  className="inline-flex items-center gap-2 text-[12px] font-medium text-primary-blue hover:text-[#0A56E0] transition-colors duration-200"
+      {/* Stacked Cards View */}
+      {!showHistory && (
+        <div className="space-y-3">
+          {/* 🔴 RED CARD - Concerns */}
+          {showConcerns && (
+            <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060] rounded-[12px] p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle size={18} className="text-[#F86060]" />
+                  <h3 className="text-[14px] font-bold text-text-primary">Performance Concerns</h3>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">
+                    {concernsData.length} users
+                  </span>
+                </div>
+                <button
+                  onClick={() => setExpandedConcerns(!expandedConcerns)}
+                  className="text-[12px] font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1"
                 >
-                  <Settings className="w-4 h-4" />
-                  Alert Settings
-                </Link>
+                  {expandedConcerns ? 'Hide details' : 'Show details'}
+                  {expandedConcerns ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </button>
+              </div>
+
+              <p className="text-[13px] text-text-secondary mb-2">
+                {concernsData.length} users showed concerning patterns today. 3 users had idle time above 50%, significantly above their personal 7-day averages. 1 user's focus time dropped to 8%.
+              </p>
+
+              {expandedConcerns && (
+                <div className="mt-4 space-y-2 pt-3 border-t border-[#FDE68A]">
+                  {concernsData.map((user, index) => (
+                    <div key={index} className="flex items-center gap-3 py-2">
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-medium flex-shrink-0"
+                        style={{ backgroundColor: user.color }}
+                      >
+                        {user.initials}
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-[13px] font-medium text-text-primary hover:text-primary-blue cursor-pointer">
+                          {user.name}
+                        </span>
+                        <span className="text-[13px] text-text-secondary"> — {user.metric}</span>
+                        {user.avg7day && (
+                          <span className="text-[12px] text-text-secondary">
+                            {' '}(7-day avg: {user.avg7day}, 30-day avg: {user.avg30day})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 🟠 ORANGE CARD - Warnings */}
+          {showWarnings && (
+            <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937] rounded-[12px] p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <Flame size={18} className="text-[#F29937]" />
+                  <h3 className="text-[14px] font-bold text-text-primary">Burnout & Overtime Warnings</h3>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F29937] text-white">
+                    {warningsData.length} user
+                  </span>
+                </div>
+                <button
+                  onClick={() => setExpandedWarnings(!expandedWarnings)}
+                  className="text-[12px] font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1"
+                >
+                  {expandedWarnings ? 'Hide details' : 'Show details'}
+                  {expandedWarnings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </button>
+              </div>
+
+              <p className="text-[13px] text-text-secondary mb-2">
+                1 user may be at risk of burnout. Rinat Hajiyev worked 11h 4m with only 8% idle — this is 130% above their 30-day average of 8h 30m.
+              </p>
+
+              {expandedWarnings && (
+                <div className="mt-4 space-y-2 pt-3 border-t border-[#FDE68A]">
+                  {warningsData.map((user, index) => (
+                    <div key={index} className="flex items-center gap-3 py-2">
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-medium flex-shrink-0"
+                        style={{ backgroundColor: user.color }}
+                      >
+                        {user.initials}
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-[13px] font-medium text-text-primary hover:text-primary-blue cursor-pointer">
+                          {user.name}
+                        </span>
+                        <span className="text-[13px] text-text-secondary">
+                          {' '}— {user.metric} (30-day avg: {user.avg30day}, today is 130% of avg)
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 🟢 GREEN CARD - Positive Highlights */}
+          {showHighlights && (
+            <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E] rounded-[12px] p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <TrendingUp size={18} className="text-[#22C55E]" />
+                  <h3 className="text-[14px] font-bold text-text-primary">Positive Highlights</h3>
+                </div>
+                <button
+                  onClick={() => setExpandedHighlights(!expandedHighlights)}
+                  className="text-[12px] font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1"
+                >
+                  {expandedHighlights ? 'Hide details' : 'Show details'}
+                  {expandedHighlights ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </button>
+              </div>
+
+              <p className="text-[13px] text-text-secondary mb-2">
+                2 users had an outstanding day. Eyyub Alakbarov maintained 100% focus with 81% productivity. Mirveli Fayazzade had minimal idle time at just 1.4%.
+              </p>
+
+              {expandedHighlights && (
+                <div className="mt-4 space-y-2 pt-3 border-t border-[#BAE6FD]">
+                  {highlightsData.map((user, index) => (
+                    <div key={index} className="flex items-center gap-3 py-2">
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-medium flex-shrink-0"
+                        style={{ backgroundColor: user.color }}
+                      >
+                        {user.initials}
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-[13px] font-medium text-text-primary hover:text-primary-blue cursor-pointer">
+                          {user.name}
+                        </span>
+                        <span className="text-[13px] text-text-secondary"> — {user.metric}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 🔵 BLUE CARD - General Summary (ALWAYS VISIBLE) */}
+          {showBlue && (
+            <div className="bg-[#F2F9FF] border-l-[3px] border-l-primary-blue rounded-[12px] p-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <BarChart3 size={18} className="text-primary-blue mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-[14px] text-text-primary leading-relaxed">
+                    Today: <span className="font-semibold">5 of 5 users active</span> · <span className="font-semibold">37h 25m</span> total · avg <span className="font-semibold">7h 29m</span> per person <span className="text-text-secondary">(team 30-day avg: 7h 12m)</span> · <span className="font-semibold">58%</span> productive · <span className="text-text-secondary">next alert tomorrow at 5:00 PM</span>
+                  </p>
+                </div>
               </div>
             </div>
           )}
