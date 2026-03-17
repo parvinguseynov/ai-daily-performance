@@ -52,10 +52,9 @@ export default function SettingsPage() {
       title: 'High Idle',
       severity: 'high',
       enabled: true,
-      description: "Idle% exceeds threshold AND is above personal 7-day average",
+      description: "Alerts when idle% today exceeds this threshold. System automatically compares with 7-day and 30-day personal averages and shows both in alert details.",
       fields: [
         { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'Min idle% to trigger', type: 'number' },
-        { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: "Multiplier vs user's average", type: 'number' },
       ],
     },
     {
@@ -111,10 +110,9 @@ export default function SettingsPage() {
         title: 'High Idle',
         severity: 'high',
         enabled: true,
-        description: "Idle% exceeds threshold AND is above personal 7-day average",
+        description: "Alerts when idle% today exceeds this threshold. System automatically compares with 7-day and 30-day personal averages and shows both in alert details.",
         fields: [
           { label: 'IDLE % ABOVE', value: 35, unit: '%', tooltip: 'Min idle% to trigger', type: 'number' },
-          { label: '× ABOVE 7-DAY AVG', value: 2.0, unit: '×', tooltip: "Multiplier vs user's average", type: 'number' },
         ],
       },
       {
