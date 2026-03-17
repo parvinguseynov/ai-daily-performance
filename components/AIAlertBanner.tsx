@@ -58,12 +58,17 @@ export function AIAlertBanner() {
   const [expandedConcerns, setExpandedConcerns] = useState(false);
   const [expandedWarnings, setExpandedWarnings] = useState(false);
   const [expandedHighlights, setExpandedHighlights] = useState(false);
+  const [selectedHistoryRow, setSelectedHistoryRow] = useState<number | null>(null);
 
   const showConcerns = demoState === 'all-alerts';
   const showWarnings = demoState === 'all-alerts' || demoState === 'warnings-only';
   const showHighlights = demoState === 'all-alerts';
   const showBlue = demoState !== 'history';
   const showHistory = demoState === 'history';
+
+  const closePanel = () => {
+    setSelectedHistoryRow(null);
+  };
 
   return (
     <div className="mb-6">
@@ -150,8 +155,9 @@ export function AIAlertBanner() {
                 {historyData.map((row, index) => (
                   <tr
                     key={index}
+                    onClick={() => setSelectedHistoryRow(index)}
                     className={`h-[60px] border-b border-[#F4F5F6] last:border-0 hover:bg-[#FAFBFC] transition-colors cursor-pointer ${
-                      row.isToday ? 'border-l-[3px] border-l-[#0C62F9] bg-[#F2F9FF]' : ''
+                      selectedHistoryRow === index ? 'border-l-[3px] border-l-[#0C62F9] bg-[#F2F9FF]' : ''
                     }`}
                   >
                     <td className="px-6 text-[13px] font-medium text-text-primary">{row.date}</td>
@@ -213,6 +219,289 @@ export function AIAlertBanner() {
             </table>
           </div>
         </div>
+      )}
+
+      {/* Side Panel - Alert History Detail */}
+      {showHistory && selectedHistoryRow !== null && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/10 z-40"
+            onClick={closePanel}
+          />
+
+          {/* Panel */}
+          <div
+            className="fixed top-0 right-0 h-full w-[480px] bg-white border-l border-[#EFF2F4] z-50 overflow-y-auto animate-slide-in-right"
+            style={{ boxShadow: '-4px 0 16px rgba(0,0,0,0.06)' }}
+          >
+            {/* Panel Header */}
+            <div className="px-6 py-5 border-b border-[#EFF2F4] sticky top-0 bg-white z-10">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-[16px] font-medium text-text-primary">Alert details</h3>
+                <button
+                  onClick={closePanel}
+                  className="p-1 hover:bg-bg-tertiary rounded transition-colors"
+                >
+                  <X className="w-5 h-5 text-text-secondary" />
+                </button>
+              </div>
+              <p className="text-[13px] text-[#7A7A7E] mb-1">
+                {selectedHistoryRow === 0 ? 'March 1, 2026 (Today)' : `February ${28 - selectedHistoryRow}, 2026`}
+              </p>
+              <p className="text-[12px] text-[#C5C5C5]">Generated at 5:00 PM</p>
+            </div>
+
+            {/* Panel Content */}
+            <div className="p-6 space-y-2">
+              {/* Content based on selected row */}
+              {selectedHistoryRow === 0 && (
+                <>
+                  {/* Concerns Card */}
+                  <div className="bg-[#FEF2F2] border-l-[2px] border-l-[#F86060] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertTriangle size={14} className="text-[#F86060]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Concerns</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">
+                        4 users
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium">PC</div>
+                        <span className="text-[12px] text-text-primary">Princess Coronel — 52% idle (7d: 15%, 30d: 18%)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center text-white text-[10px] font-medium">RM</div>
+                        <span className="text-[12px] text-text-primary">Ramiz Murshudov — 48% idle (7d: 12%, 30d: 14%)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-medium">SG</div>
+                        <span className="text-[12px] text-text-primary">Saba Gogiberidze — 44% idle (7d: 18%, 30d: 20%)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium">NA</div>
+                        <span className="text-[12px] text-text-primary">Nurlana Ahmadova — 8% focus (7d: 65%, 30d: 60%)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Warnings Card */}
+                  <div className="bg-[#FFF9F2] border-l-[2px] border-l-[#F29937] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Flame size={14} className="text-[#F29937]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Burnout</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F29937] text-white">
+                        1 user
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium">RH</div>
+                      <span className="text-[12px] text-text-primary">Rinat Hajiyev — 11h 4m, 8% idle (130% of 30d avg)</span>
+                    </div>
+                  </div>
+
+                  {/* Highlights Card */}
+                  <div className="bg-[#F0FDF4] border-l-[2px] border-l-[#22C55E] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingUp size={14} className="text-[#22C55E]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Highlights</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#22C55E] text-white">
+                        2 users
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium">EA</div>
+                        <span className="text-[12px] text-text-primary">Eyyub Alakbarov — 100% focus, 81.6% productive</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-medium">MF</div>
+                        <span className="text-[12px] text-text-primary">Mirveli Fayazzade — 1.4% idle, 44% productive</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Summary */}
+                  <div className="bg-[#F2F9FF] border-l-[2px] border-l-[#0C62F9] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 size={14} className="text-primary-blue" />
+                      <span className="text-[12px] text-text-primary">5 active · 37h total · 58% productive</span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Feb 28 */}
+              {selectedHistoryRow === 1 && (
+                <>
+                  <div className="bg-[#FEF2F2] border-l-[2px] border-l-[#F86060] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertTriangle size={14} className="text-[#F86060]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Concerns</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">2 users</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center text-white text-[10px] font-medium">RM</div>
+                        <span className="text-[12px] text-text-primary">Ramiz M. — 41% idle</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium">PC</div>
+                        <span className="text-[12px] text-text-primary">Princess C. — 38% idle</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#F0FDF4] border-l-[2px] border-l-[#22C55E] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingUp size={14} className="text-[#22C55E]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Highlights</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#22C55E] text-white">3 users</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium">EA</div>
+                        <span className="text-[12px] text-text-primary">Eyyub A.</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-medium">MF</div>
+                        <span className="text-[12px] text-text-primary">Mirveli F.</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-medium">SG</div>
+                        <span className="text-[12px] text-text-primary">Saba G.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#F2F9FF] border-l-[2px] border-l-[#0C62F9] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 size={14} className="text-primary-blue" />
+                      <span className="text-[12px] text-text-primary">5 active · 35h total · 62% productive</span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Feb 27 */}
+              {selectedHistoryRow === 2 && (
+                <>
+                  <div className="bg-[#FEF2F2] border-l-[2px] border-l-[#F86060] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertTriangle size={14} className="text-[#F86060]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Concerns</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">3 users</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium">PC</div>
+                        <span className="text-[12px] text-text-primary">Princess C.</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium">NA</div>
+                        <span className="text-[12px] text-text-primary">Nurlana A.</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium">EM</div>
+                        <span className="text-[12px] text-text-primary">Elshad M.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#FFF9F2] border-l-[2px] border-l-[#F29937] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Flame size={14} className="text-[#F29937]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Burnout</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F29937] text-white">1 user</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium">RH</div>
+                      <span className="text-[12px] text-text-primary">Rinat H. — 10h 30m</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#F0FDF4] border-l-[2px] border-l-[#22C55E] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingUp size={14} className="text-[#22C55E]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Highlights</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#22C55E] text-white">1 user</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium">EA</div>
+                      <span className="text-[12px] text-text-primary">Eyyub A.</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#F2F9FF] border-l-[2px] border-l-[#0C62F9] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 size={14} className="text-primary-blue" />
+                      <span className="text-[12px] text-text-primary">4 active · 28h total · 55% productive</span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Other days - simplified version */}
+              {selectedHistoryRow && selectedHistoryRow > 2 && (
+                <>
+                  <div className="bg-[#FEF2F2] border-l-[2px] border-l-[#F86060] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertTriangle size={14} className="text-[#F86060]" />
+                      <span className="text-[13px] font-semibold text-text-primary">Concerns</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">
+                        {historyData[selectedHistoryRow].concerns} {historyData[selectedHistoryRow].concerns === 1 ? 'user' : 'users'}
+                      </span>
+                    </div>
+                    <span className="text-[12px] text-text-secondary">Various users flagged for performance concerns</span>
+                  </div>
+
+                  {historyData[selectedHistoryRow].warnings > 0 && (
+                    <div className="bg-[#FFF9F2] border-l-[2px] border-l-[#F29937] rounded-[8px] p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Flame size={14} className="text-[#F29937]" />
+                        <span className="text-[13px] font-semibold text-text-primary">Burnout</span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F29937] text-white">
+                          {historyData[selectedHistoryRow].warnings} {historyData[selectedHistoryRow].warnings === 1 ? 'user' : 'users'}
+                        </span>
+                      </div>
+                      <span className="text-[12px] text-text-secondary">Burnout risk detected</span>
+                    </div>
+                  )}
+
+                  {historyData[selectedHistoryRow].highlights > 0 && (
+                    <div className="bg-[#F0FDF4] border-l-[2px] border-l-[#22C55E] rounded-[8px] p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp size={14} className="text-[#22C55E]" />
+                        <span className="text-[13px] font-semibold text-text-primary">Highlights</span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#22C55E] text-white">
+                          {historyData[selectedHistoryRow].highlights} {historyData[selectedHistoryRow].highlights === 1 ? 'user' : 'users'}
+                        </span>
+                      </div>
+                      <span className="text-[12px] text-text-secondary">Strong performers recognized</span>
+                    </div>
+                  )}
+
+                  <div className="bg-[#F2F9FF] border-l-[2px] border-l-[#0C62F9] rounded-[8px] p-3">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 size={14} className="text-primary-blue" />
+                      <span className="text-[12px] text-text-primary">
+                        {historyData[selectedHistoryRow].active} · {historyData[selectedHistoryRow].totalHours} · {historyData[selectedHistoryRow].productive}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Panel Footer */}
+            <div className="px-6 py-4 border-t border-[#EFF2F4] sticky bottom-0 bg-white">
+              <button className="text-[13px] font-medium text-[#0C62F9] hover:text-[#0A56E0] transition-colors">
+                View full dashboard for this day →
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Stacked Cards View */}
