@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertTriangle, TrendingDown, Flame, TrendingUp, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
+import { AlertTriangle, TrendingDown, Flame, TrendingUp, BarChart3, ChevronDown, ChevronUp, Zap, CheckCircle, History, Download, Eye, Mail } from 'lucide-react';
 import Link from 'next/link';
 
 type DemoState = 'all-alerts' | 'warnings-only' | 'clean-day' | 'history';
@@ -24,6 +24,7 @@ interface HistoryRow {
   concerns: number;
   warnings: number;
   highlights: number;
+  status: 'viewed' | 'sent' | 'emailed';
 }
 
 const concernsData: UserDetail[] = [
@@ -43,13 +44,13 @@ const highlightsData: UserDetail[] = [
 ];
 
 const historyData: HistoryRow[] = [
-  { date: 'Mar 1 (Today)', isToday: true, active: '5 active', totalHours: '37h total', productive: '58% productive', concerns: 4, warnings: 1, highlights: 2 },
-  { date: 'Feb 28', active: '5 active', totalHours: '35h total', productive: '62% productive', concerns: 2, warnings: 0, highlights: 3 },
-  { date: 'Feb 27', active: '4 active', totalHours: '28h total', productive: '55% productive', concerns: 3, warnings: 1, highlights: 1 },
-  { date: 'Feb 26', active: '5 active', totalHours: '39h total', productive: '64% productive', concerns: 1, warnings: 0, highlights: 4 },
-  { date: 'Feb 25', active: '5 active', totalHours: '36h total', productive: '60% productive', concerns: 2, warnings: 0, highlights: 2 },
-  { date: 'Feb 24', active: '3 active', totalHours: '22h total', productive: '48% productive', concerns: 5, warnings: 2, highlights: 0 },
-  { date: 'Feb 23', active: '5 active', totalHours: '34h total', productive: '57% productive', concerns: 2, warnings: 1, highlights: 1 },
+  { date: 'Mar 1 (Today)', isToday: true, active: '5 active', totalHours: '37h', productive: '58% prod', concerns: 4, warnings: 1, highlights: 2, status: 'viewed' },
+  { date: 'Feb 28', active: '5 active', totalHours: '35h', productive: '62% prod', concerns: 2, warnings: 0, highlights: 3, status: 'sent' },
+  { date: 'Feb 27', active: '4 active', totalHours: '28h', productive: '55% prod', concerns: 3, warnings: 1, highlights: 1, status: 'sent' },
+  { date: 'Feb 26', active: '5 active', totalHours: '39h', productive: '64% prod', concerns: 1, warnings: 0, highlights: 4, status: 'emailed' },
+  { date: 'Feb 25', active: '5 active', totalHours: '36h', productive: '60% prod', concerns: 2, warnings: 0, highlights: 2, status: 'emailed' },
+  { date: 'Feb 24', active: '3 active', totalHours: '22h', productive: '48% prod', concerns: 5, warnings: 2, highlights: 0, status: 'emailed' },
+  { date: 'Feb 23', active: '5 active', totalHours: '34h', productive: '57% prod', concerns: 2, warnings: 1, highlights: 1, status: 'emailed' },
 ];
 
 export function AIAlertBanner() {
@@ -68,105 +69,143 @@ export function AIAlertBanner() {
     <div className="mb-6">
       {/* Demo State Switcher */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="inline-flex bg-bg-secondary border border-border-card rounded-[8px] p-0.5">
-          <button
-            onClick={() => setDemoState('all-alerts')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
-              demoState === 'all-alerts'
-                ? 'bg-ai-gradient text-text-white shadow-sm'
-                : 'text-text-secondary hover:text-text-primary'
-            }`}
-          >
-            ⚡ All Alerts
-          </button>
-          <button
-            onClick={() => setDemoState('warnings-only')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
-              demoState === 'warnings-only'
-                ? 'bg-ai-gradient text-text-white shadow-sm'
-                : 'text-text-secondary hover:text-text-primary'
-            }`}
-          >
-            ⚠️ Warnings Only
-          </button>
-          <button
-            onClick={() => setDemoState('clean-day')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
-              demoState === 'clean-day'
-                ? 'bg-ai-gradient text-text-white shadow-sm'
-                : 'text-text-secondary hover:text-text-primary'
-            }`}
-          >
-            ✅ Clean Day
-          </button>
-          <button
-            onClick={() => setDemoState('history')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-[6px] transition-all duration-200 ${
-              demoState === 'history'
-                ? 'bg-ai-gradient text-text-white shadow-sm'
-                : 'text-text-secondary hover:text-text-primary'
-            }`}
-          >
-            📊 History
-          </button>
-        </div>
+        <button
+          onClick={() => setDemoState('all-alerts')}
+          className={`flex items-center gap-2 px-[14px] py-[6px] text-[13px] font-medium rounded-[8px] transition-all duration-200 ${
+            demoState === 'all-alerts'
+              ? 'bg-[#0C62F9] text-white'
+              : 'bg-white text-[#23262F] border border-[#E0E0E0] hover:border-[#0C62F9]'
+          }`}
+        >
+          <Zap size={14} />
+          All Alerts
+        </button>
+        <button
+          onClick={() => setDemoState('warnings-only')}
+          className={`flex items-center gap-2 px-[14px] py-[6px] text-[13px] font-medium rounded-[8px] transition-all duration-200 ${
+            demoState === 'warnings-only'
+              ? 'bg-[#0C62F9] text-white'
+              : 'bg-white text-[#23262F] border border-[#E0E0E0] hover:border-[#0C62F9]'
+          }`}
+        >
+          <AlertTriangle size={14} />
+          Warnings Only
+        </button>
+        <button
+          onClick={() => setDemoState('clean-day')}
+          className={`flex items-center gap-2 px-[14px] py-[6px] text-[13px] font-medium rounded-[8px] transition-all duration-200 ${
+            demoState === 'clean-day'
+              ? 'bg-[#0C62F9] text-white'
+              : 'bg-white text-[#23262F] border border-[#E0E0E0] hover:border-[#0C62F9]'
+          }`}
+        >
+          <CheckCircle size={14} />
+          Clean Day
+        </button>
+        <button
+          onClick={() => setDemoState('history')}
+          className={`flex items-center gap-2 px-[14px] py-[6px] text-[13px] font-medium rounded-[8px] transition-all duration-200 ${
+            demoState === 'history'
+              ? 'bg-[#0C62F9] text-white'
+              : 'bg-white text-[#23262F] border border-[#E0E0E0] hover:border-[#0C62F9]'
+          }`}
+        >
+          <History size={14} />
+          History
+        </button>
       </div>
 
       {/* History View */}
       {showHistory && (
-        <div className="bg-white border border-border-card rounded-[12px] overflow-hidden shadow-card">
-          <div className="px-6 py-4 border-b border-border-divider">
-            <h3 className="text-[16px] font-semibold text-text-primary">Alert History — Last 7 Days</h3>
+        <div className="bg-white border border-[#EFF2F4] rounded-[8px] overflow-hidden" style={{ boxShadow: '0px 4px 6px -4px rgba(24,39,75,0.12)' }}>
+          {/* Header */}
+          <div className="px-6 py-4 border-b border-[#EFF2F4] flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <History size={18} className="text-text-primary" />
+                <h3 className="text-[16px] font-medium text-text-primary">Alert history</h3>
+              </div>
+              <p className="text-[13px] text-[#7A7A7E]">Last 7 days</p>
+            </div>
+            <button className="flex items-center gap-2 text-[13px] text-text-secondary hover:text-text-primary transition-colors">
+              <Download size={14} />
+              Export
+            </button>
           </div>
+
+          {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="h-[44px] bg-bg-secondary border-b border-border-divider">
-                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Date</th>
-                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Summary</th>
-                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Concerns</th>
-                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Warnings</th>
-                  <th className="px-6 text-left text-[12px] font-medium text-text-secondary uppercase tracking-wide">Highlights</th>
+                <tr className="h-[44px] bg-[#F8FAFC] border-b border-[#F4F5F6]">
+                  <th className="px-6 text-left text-[10px] font-medium text-[#7A7A7E] uppercase tracking-[0.05em]">Date</th>
+                  <th className="px-6 text-left text-[10px] font-medium text-[#7A7A7E] uppercase tracking-[0.05em]">Team Summary</th>
+                  <th className="px-6 text-left text-[10px] font-medium text-[#7A7A7E] uppercase tracking-[0.05em]">Concerns</th>
+                  <th className="px-6 text-left text-[10px] font-medium text-[#7A7A7E] uppercase tracking-[0.05em]">Warnings</th>
+                  <th className="px-6 text-left text-[10px] font-medium text-[#7A7A7E] uppercase tracking-[0.05em]">Highlights</th>
+                  <th className="px-6 text-left text-[10px] font-medium text-[#7A7A7E] uppercase tracking-[0.05em]">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {historyData.map((row, index) => (
                   <tr
                     key={index}
-                    className={`h-[56px] border-b border-border-divider last:border-0 hover:bg-bg-tertiary transition-colors cursor-pointer ${
-                      row.isToday ? 'border-l-[3px] border-l-primary-blue' : ''
+                    className={`h-[60px] border-b border-[#F4F5F6] last:border-0 hover:bg-[#FAFBFC] transition-colors cursor-pointer ${
+                      row.isToday ? 'border-l-[3px] border-l-[#0C62F9] bg-[#F2F9FF]' : ''
                     }`}
                   >
-                    <td className="px-6 text-[14px] font-medium text-text-primary">{row.date}</td>
+                    <td className="px-6 text-[13px] font-medium text-text-primary">{row.date}</td>
                     <td className="px-6 text-[13px] text-text-secondary">
-                      {row.active}, {row.totalHours}, {row.productive}
+                      {row.active} · {row.totalHours} · {row.productive}
                     </td>
                     <td className="px-6">
                       {row.concerns > 0 ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#FEF2F2] text-[#F86060]">
-                          {row.concerns} users flagged
+                        <span className="inline-flex items-center px-[10px] py-[3px] rounded-[10px] text-[12px] font-medium" style={{ backgroundColor: 'rgba(226,75,74,0.08)', color: '#A32D2D' }}>
+                          {row.concerns} flagged
                         </span>
                       ) : (
-                        <span className="text-[12px] text-text-secondary">None</span>
+                        <span className="text-[13px] text-[#C5C5C5]">—</span>
                       )}
                     </td>
                     <td className="px-6">
                       {row.warnings > 0 ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#FFF9F2] text-[#F29937]">
-                          {row.warnings} burnout risk{row.warnings > 1 ? 's' : ''}
+                        <span className="inline-flex items-center px-[10px] py-[3px] rounded-[10px] text-[12px] font-medium" style={{ backgroundColor: 'rgba(239,159,39,0.08)', color: '#854F0B' }}>
+                          {row.warnings} burnout
                         </span>
                       ) : (
-                        <span className="text-[12px] text-text-secondary">None</span>
+                        <span className="text-[13px] text-[#C5C5C5]">—</span>
                       )}
                     </td>
                     <td className="px-6">
                       {row.highlights > 0 ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#22C55E]">
-                          {row.highlights} strong performer{row.highlights > 1 ? 's' : ''}
+                        <span className="inline-flex items-center px-[10px] py-[3px] rounded-[10px] text-[12px] font-medium" style={{ backgroundColor: 'rgba(29,158,117,0.08)', color: '#0F6E56' }}>
+                          {row.highlights} strong
                         </span>
                       ) : (
-                        <span className="text-[12px] text-text-secondary">None</span>
+                        <span className="text-[13px] text-[#C5C5C5]">—</span>
                       )}
+                    </td>
+                    <td className="px-6">
+                      <div className="flex items-center gap-2">
+                        {row.status === 'viewed' && (
+                          <>
+                            <Eye size={14} className="text-[#7A7A7E]" />
+                            <span className="text-[13px] text-[#7A7A7E]">Viewed</span>
+                          </>
+                        )}
+                        {row.status === 'sent' && (
+                          <>
+                            <CheckCircle size={14} className="text-[#65C366]" />
+                            <span className="text-[13px] text-[#7A7A7E]">Sent</span>
+                          </>
+                        )}
+                        {row.status === 'emailed' && (
+                          <>
+                            <Mail size={14} className="text-[#0C62F9]" />
+                            <span className="text-[13px] text-[#7A7A7E]">Emailed</span>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
