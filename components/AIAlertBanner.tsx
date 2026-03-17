@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertTriangle, TrendingDown, Flame, TrendingUp, BarChart3, ChevronDown, ChevronUp, Zap, CheckCircle, History, Download, Eye, Mail, X } from 'lucide-react';
+import { AlertTriangle, TrendingDown, Flame, TrendingUp, BarChart3, ChevronDown, ChevronUp, Zap, CheckCircle, History, Download, Eye, Mail, X, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 type DemoState = 'all-alerts' | 'warnings-only' | 'clean-day' | 'history';
@@ -232,100 +232,121 @@ export function AIAlertBanner() {
 
           {/* Panel */}
           <div
-            className="fixed top-0 right-0 h-full w-[480px] bg-white border-l border-[#EFF2F4] z-50 overflow-y-auto animate-slide-in-right"
+            className="fixed top-0 right-0 h-full w-[460px] bg-white border-l border-[#EFF2F4] z-50 flex flex-col animate-slide-in-right"
             style={{ boxShadow: '-4px 0 16px rgba(0,0,0,0.06)' }}
           >
             {/* Panel Header */}
-            <div className="px-6 py-5 border-b border-[#EFF2F4] sticky top-0 bg-white z-10">
-              <div className="flex items-center justify-between mb-2">
+            <div className="px-6 pt-5 pb-4 border-b border-[#F4F5F6]" style={{ padding: '20px 24px 16px' }}>
+              <div className="flex items-center justify-between mb-3">
                 <h3 className="text-[16px] font-medium text-text-primary">Alert details</h3>
                 <button
                   onClick={closePanel}
-                  className="p-1 hover:bg-bg-tertiary rounded transition-colors"
+                  className="w-7 h-7 border border-[#EFF2F4] rounded-[6px] flex items-center justify-center hover:bg-bg-tertiary transition-colors"
                 >
-                  <X className="w-5 h-5 text-text-secondary" />
+                  <X className="w-4 h-4 text-text-secondary" />
                 </button>
               </div>
-              <p className="text-[13px] text-[#7A7A7E] mb-1">
-                {selectedHistoryRow === 0 ? 'March 1, 2026 (Today)' : `February ${28 - selectedHistoryRow}, 2026`}
+              <p className="text-[14px] font-medium text-[#23262F] mb-1">
+                {selectedHistoryRow === 0 ? 'March 1, 2026' : `February ${28 - selectedHistoryRow}, 2026`}
               </p>
               <p className="text-[12px] text-[#C5C5C5]">Generated at 5:00 PM</p>
             </div>
 
-            {/* Panel Content */}
-            <div className="p-6 space-y-2">
+            {/* Panel Body */}
+            <div className="flex-1 overflow-y-auto flex flex-col" style={{ padding: '16px 24px', gap: '12px' }}>
               {/* Content based on selected row */}
               {selectedHistoryRow === 0 && (
                 <>
                   {/* Concerns Card */}
-                  <div className="bg-[#FEF2F2] border-l-[2px] border-l-[#F86060] rounded-[8px] p-3">
+                  <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <AlertTriangle size={14} className="text-[#F86060]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Concerns</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">
-                        4 users
+                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
+                        <AlertTriangle size={14} className="text-[#F86060]" />
+                      </div>
+                      <span className="text-[13px] font-medium text-text-primary">Concerns</span>
+                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
+                        4
                       </span>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium">PC</div>
-                        <span className="text-[12px] text-text-primary">Princess Coronel — 52% idle (7d: 15%, 30d: 18%)</span>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">PC</div>
+                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Princess Coronel</span>
+                        <span className="text-[12px] text-[#F86060]">52% idle</span>
+                        <span className="text-[11px] text-[#C5C5C5]">7d: 15% · 30d: 18%</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center text-white text-[10px] font-medium">RM</div>
-                        <span className="text-[12px] text-text-primary">Ramiz Murshudov — 48% idle (7d: 12%, 30d: 14%)</span>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RM</div>
+                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Ramiz Murshudov</span>
+                        <span className="text-[12px] text-[#F86060]">48% idle</span>
+                        <span className="text-[11px] text-[#C5C5C5]">7d: 12% · 30d: 14%</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-medium">SG</div>
-                        <span className="text-[12px] text-text-primary">Saba Gogiberidze — 44% idle (7d: 18%, 30d: 20%)</span>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">SG</div>
+                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Saba Gogiberidze</span>
+                        <span className="text-[12px] text-[#F86060]">44% idle</span>
+                        <span className="text-[11px] text-[#C5C5C5]">7d: 18% · 30d: 20%</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium">NA</div>
-                        <span className="text-[12px] text-text-primary">Nurlana Ahmadova — 8% focus (7d: 65%, 30d: 60%)</span>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">NA</div>
+                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Nurlana Ahmadova</span>
+                        <span className="text-[12px] text-[#F86060]">8% focus</span>
+                        <span className="text-[11px] text-[#C5C5C5]">7d: 65% · 30d: 60%</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Warnings Card */}
-                  <div className="bg-[#FFF9F2] border-l-[2px] border-l-[#F29937] rounded-[8px] p-3">
+                  <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <Flame size={14} className="text-[#F29937]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Burnout</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F29937] text-white">
-                        1 user
+                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
+                        <Flame size={14} className="text-[#F29937]" />
+                      </div>
+                      <span className="text-[13px] font-medium text-text-primary">Burnout</span>
+                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(242,153,55,0.12)', color: '#854F0B', padding: '2px 8px' }}>
+                        1
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium">RH</div>
-                      <span className="text-[12px] text-text-primary">Rinat Hajiyev — 11h 4m, 8% idle (130% of 30d avg)</span>
+                    <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                      <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RH</div>
+                      <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Rinat Hajiyev</span>
+                      <span className="text-[12px] text-[#F29937]">11h 4m worked</span>
+                      <span className="text-[11px] text-[#C5C5C5]">30d avg: 8h 30m</span>
                     </div>
                   </div>
 
                   {/* Highlights Card */}
-                  <div className="bg-[#F0FDF4] border-l-[2px] border-l-[#22C55E] rounded-[8px] p-3">
+                  <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <TrendingUp size={14} className="text-[#22C55E]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Highlights</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#22C55E] text-white">
-                        2 users
+                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
+                        <TrendingUp size={14} className="text-[#22C55E]" />
+                      </div>
+                      <span className="text-[13px] font-medium text-text-primary">Highlights</span>
+                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
+                        2
                       </span>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium">EA</div>
-                        <span className="text-[12px] text-text-primary">Eyyub Alakbarov — 100% focus, 81.6% productive</span>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">EA</div>
+                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Eyyub Alakbarov</span>
+                        <span className="text-[12px] text-[#22C55E]">100% focus, 81.6% productive</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-medium">MF</div>
-                        <span className="text-[12px] text-text-primary">Mirveli Fayazzade — 1.4% idle, 44% productive</span>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">MF</div>
+                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Mirveli Fayazzade</span>
+                        <span className="text-[12px] text-[#22C55E]">1.4% idle, 44% productive</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Summary */}
-                  <div className="bg-[#F2F9FF] border-l-[2px] border-l-[#0C62F9] rounded-[8px] p-3">
+                  {/* Separator */}
+                  <div className="h-[0.5px] bg-[#F4F5F6]" />
+
+                  {/* Summary - NOT a card, just a text block */}
+                  <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2">
-                      <BarChart3 size={14} className="text-primary-blue" />
+                      <BarChart3 size={16} className="text-[#378ADD]" />
                       <span className="text-[12px] text-text-primary">5 active · 37h total · 58% productive</span>
                     </div>
                   </div>
@@ -335,49 +356,63 @@ export function AIAlertBanner() {
               {/* Feb 28 */}
               {selectedHistoryRow === 1 && (
                 <>
-                  <div className="bg-[#FEF2F2] border-l-[2px] border-l-[#F86060] rounded-[8px] p-3">
+                  <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <AlertTriangle size={14} className="text-[#F86060]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Concerns</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">2 users</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center text-white text-[10px] font-medium">RM</div>
-                        <span className="text-[12px] text-text-primary">Ramiz M. — 41% idle</span>
+                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
+                        <AlertTriangle size={14} className="text-[#F86060]" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium">PC</div>
-                        <span className="text-[12px] text-text-primary">Princess C. — 38% idle</span>
+                      <span className="text-[13px] font-medium text-text-primary">Concerns</span>
+                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
+                        2
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#22C55E] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RM</div>
+                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Ramiz M.</span>
+                        <span className="text-[12px] text-[#F86060]">41% idle</span>
+                      </div>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">PC</div>
+                        <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Princess C.</span>
+                        <span className="text-[12px] text-[#F86060]">38% idle</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#F0FDF4] border-l-[2px] border-l-[#22C55E] rounded-[8px] p-3">
+                  <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <TrendingUp size={14} className="text-[#22C55E]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Highlights</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#22C55E] text-white">3 users</span>
+                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
+                        <TrendingUp size={14} className="text-[#22C55E]" />
+                      </div>
+                      <span className="text-[13px] font-medium text-text-primary">Highlights</span>
+                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
+                        3
+                      </span>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium">EA</div>
-                        <span className="text-[12px] text-text-primary">Eyyub A.</span>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">EA</div>
+                        <span className="text-[12px] font-medium text-text-primary">Eyyub A.</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-medium">MF</div>
-                        <span className="text-[12px] text-text-primary">Mirveli F.</span>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">MF</div>
+                        <span className="text-[12px] font-medium text-text-primary">Mirveli F.</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-medium">SG</div>
-                        <span className="text-[12px] text-text-primary">Saba G.</span>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">SG</div>
+                        <span className="text-[12px] font-medium text-text-primary">Saba G.</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#F2F9FF] border-l-[2px] border-l-[#0C62F9] rounded-[8px] p-3">
+                  {/* Separator */}
+                  <div className="h-[0.5px] bg-[#F4F5F6]" />
+
+                  {/* Summary */}
+                  <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2">
-                      <BarChart3 size={14} className="text-primary-blue" />
+                      <BarChart3 size={16} className="text-[#378ADD]" />
                       <span className="text-[12px] text-text-primary">5 active · 35h total · 62% productive</span>
                     </div>
                   </div>
@@ -387,55 +422,72 @@ export function AIAlertBanner() {
               {/* Feb 27 */}
               {selectedHistoryRow === 2 && (
                 <>
-                  <div className="bg-[#FEF2F2] border-l-[2px] border-l-[#F86060] rounded-[8px] p-3">
+                  <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <AlertTriangle size={14} className="text-[#F86060]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Concerns</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">3 users</span>
+                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
+                        <AlertTriangle size={14} className="text-[#F86060]" />
+                      </div>
+                      <span className="text-[13px] font-medium text-text-primary">Concerns</span>
+                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
+                        3
+                      </span>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium">PC</div>
-                        <span className="text-[12px] text-text-primary">Princess C.</span>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#F29937] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">PC</div>
+                        <span className="text-[12px] font-medium text-text-primary">Princess C.</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium">NA</div>
-                        <span className="text-[12px] text-text-primary">Nurlana A.</span>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">NA</div>
+                        <span className="text-[12px] font-medium text-text-primary">Nurlana A.</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium">EM</div>
-                        <span className="text-[12px] text-text-primary">Elshad M.</span>
+                      <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                        <div className="w-6 h-6 rounded-full bg-[#0C62F9] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">EM</div>
+                        <span className="text-[12px] font-medium text-text-primary">Elshad M.</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#FFF9F2] border-l-[2px] border-l-[#F29937] rounded-[8px] p-3">
+                  <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <Flame size={14} className="text-[#F29937]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Burnout</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F29937] text-white">1 user</span>
+                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
+                        <Flame size={14} className="text-[#F29937]" />
+                      </div>
+                      <span className="text-[13px] font-medium text-text-primary">Burnout</span>
+                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(242,153,55,0.12)', color: '#854F0B', padding: '2px 8px' }}>
+                        1
+                      </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium">RH</div>
-                      <span className="text-[12px] text-text-primary">Rinat H. — 10h 30m</span>
+                    <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                      <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RH</div>
+                      <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Rinat H.</span>
+                      <span className="text-[12px] text-[#F29937]">10h 30m worked</span>
                     </div>
                   </div>
 
-                  <div className="bg-[#F0FDF4] border-l-[2px] border-l-[#22C55E] rounded-[8px] p-3">
+                  <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <TrendingUp size={14} className="text-[#22C55E]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Highlights</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#22C55E] text-white">1 user</span>
+                      <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
+                        <TrendingUp size={14} className="text-[#22C55E]" />
+                      </div>
+                      <span className="text-[13px] font-medium text-text-primary">Highlights</span>
+                      <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
+                        1
+                      </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium">EA</div>
-                      <span className="text-[12px] text-text-primary">Eyyub A.</span>
+                    <div className="flex items-center gap-2 rounded-[6px] hover:bg-[rgba(0,0,0,0.015)] transition-colors" style={{ padding: '6px 8px' }}>
+                      <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">EA</div>
+                      <span className="text-[12px] font-medium text-text-primary">Eyyub A.</span>
                     </div>
                   </div>
 
-                  <div className="bg-[#F2F9FF] border-l-[2px] border-l-[#0C62F9] rounded-[8px] p-3">
+                  {/* Separator */}
+                  <div className="h-[0.5px] bg-[#F4F5F6]" />
+
+                  {/* Summary */}
+                  <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2">
-                      <BarChart3 size={14} className="text-primary-blue" />
+                      <BarChart3 size={16} className="text-[#378ADD]" />
                       <span className="text-[12px] text-text-primary">4 active · 28h total · 55% productive</span>
                     </div>
                   </div>
@@ -445,24 +497,30 @@ export function AIAlertBanner() {
               {/* Other days - simplified version */}
               {selectedHistoryRow && selectedHistoryRow > 2 && (
                 <>
-                  <div className="bg-[#FEF2F2] border-l-[2px] border-l-[#F86060] rounded-[8px] p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <AlertTriangle size={14} className="text-[#F86060]" />
-                      <span className="text-[13px] font-semibold text-text-primary">Concerns</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F86060] text-white">
-                        {historyData[selectedHistoryRow].concerns} {historyData[selectedHistoryRow].concerns === 1 ? 'user' : 'users'}
-                      </span>
+                  {historyData[selectedHistoryRow].concerns > 0 && (
+                    <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
+                          <AlertTriangle size={14} className="text-[#F86060]" />
+                        </div>
+                        <span className="text-[13px] font-medium text-text-primary">Concerns</span>
+                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(248,96,96,0.12)', color: '#A32D2D', padding: '2px 8px' }}>
+                          {historyData[selectedHistoryRow].concerns}
+                        </span>
+                      </div>
+                      <span className="text-[12px] text-text-secondary">Various users flagged for performance concerns</span>
                     </div>
-                    <span className="text-[12px] text-text-secondary">Various users flagged for performance concerns</span>
-                  </div>
+                  )}
 
                   {historyData[selectedHistoryRow].warnings > 0 && (
-                    <div className="bg-[#FFF9F2] border-l-[2px] border-l-[#F29937] rounded-[8px] p-3">
+                    <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                       <div className="flex items-center gap-2 mb-2">
-                        <Flame size={14} className="text-[#F29937]" />
-                        <span className="text-[13px] font-semibold text-text-primary">Burnout</span>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F29937] text-white">
-                          {historyData[selectedHistoryRow].warnings} {historyData[selectedHistoryRow].warnings === 1 ? 'user' : 'users'}
+                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
+                          <Flame size={14} className="text-[#F29937]" />
+                        </div>
+                        <span className="text-[13px] font-medium text-text-primary">Burnout</span>
+                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(242,153,55,0.12)', color: '#854F0B', padding: '2px 8px' }}>
+                          {historyData[selectedHistoryRow].warnings}
                         </span>
                       </div>
                       <span className="text-[12px] text-text-secondary">Burnout risk detected</span>
@@ -470,21 +528,27 @@ export function AIAlertBanner() {
                   )}
 
                   {historyData[selectedHistoryRow].highlights > 0 && (
-                    <div className="bg-[#F0FDF4] border-l-[2px] border-l-[#22C55E] rounded-[8px] p-3">
+                    <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
                       <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp size={14} className="text-[#22C55E]" />
-                        <span className="text-[13px] font-semibold text-text-primary">Highlights</span>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#22C55E] text-white">
-                          {historyData[selectedHistoryRow].highlights} {historyData[selectedHistoryRow].highlights === 1 ? 'user' : 'users'}
+                        <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
+                          <TrendingUp size={14} className="text-[#22C55E]" />
+                        </div>
+                        <span className="text-[13px] font-medium text-text-primary">Highlights</span>
+                        <span className="inline-flex items-center rounded-[10px] text-[10px] font-medium" style={{ backgroundColor: 'rgba(34,197,94,0.12)', color: '#0F6E56', padding: '2px 8px' }}>
+                          {historyData[selectedHistoryRow].highlights}
                         </span>
                       </div>
                       <span className="text-[12px] text-text-secondary">Strong performers recognized</span>
                     </div>
                   )}
 
-                  <div className="bg-[#F2F9FF] border-l-[2px] border-l-[#0C62F9] rounded-[8px] p-3">
+                  {/* Separator */}
+                  <div className="h-[0.5px] bg-[#F4F5F6]" />
+
+                  {/* Summary */}
+                  <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2">
-                      <BarChart3 size={14} className="text-primary-blue" />
+                      <BarChart3 size={16} className="text-[#378ADD]" />
                       <span className="text-[12px] text-text-primary">
                         {historyData[selectedHistoryRow].active} · {historyData[selectedHistoryRow].totalHours} · {historyData[selectedHistoryRow].productive}
                       </span>
@@ -496,8 +560,9 @@ export function AIAlertBanner() {
 
             {/* Panel Footer */}
             <div className="px-6 py-4 border-t border-[#EFF2F4] sticky bottom-0 bg-white">
-              <button className="text-[13px] font-medium text-[#0C62F9] hover:text-[#0A56E0] transition-colors">
-                View full dashboard for this day →
+              <button className="flex items-center gap-1.5 text-[13px] font-medium text-[#0C62F9] hover:text-[#0A56E0] transition-colors">
+                View full dashboard for this day
+                <ExternalLink size={14} />
               </button>
             </div>
           </div>
