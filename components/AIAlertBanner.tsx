@@ -236,7 +236,7 @@ export function AIAlertBanner() {
             style={{ boxShadow: '-4px 0 16px rgba(0,0,0,0.06)' }}
           >
             {/* Panel Header */}
-            <div className="px-6 pt-5 pb-4 border-b border-[#F4F5F6]" style={{ padding: '20px 24px 16px' }}>
+            <div className="px-6 pt-5 pb-4 border-b border-[#F4F5F6] flex-shrink-0" style={{ padding: '20px 24px 16px' }}>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-[16px] font-medium text-text-primary">Alert details</h3>
                 <button
@@ -259,7 +259,7 @@ export function AIAlertBanner() {
                 <>
                   {/* Concerns Card */}
                   <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                       <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
                         <AlertTriangle size={14} className="text-[#F86060]" />
                       </div>
@@ -298,7 +298,7 @@ export function AIAlertBanner() {
 
                   {/* Warnings Card */}
                   <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                       <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
                         <Flame size={14} className="text-[#F29937]" />
                       </div>
@@ -311,13 +311,13 @@ export function AIAlertBanner() {
                       <div className="w-6 h-6 rounded-full bg-[#F86060] flex items-center justify-center text-white text-[10px] font-medium flex-shrink-0">RH</div>
                       <span className="text-[12px] font-medium text-text-primary" style={{ minWidth: '110px' }}>Rinat Hajiyev</span>
                       <span className="text-[12px] text-[#F29937]">11h 4m worked</span>
-                      <span className="text-[11px] text-[#C5C5C5]">30d avg: 8h 30m</span>
+                      <span className="text-[11px] text-[#C5C5C5]">8% idle · 130% of 30d avg</span>
                     </div>
                   </div>
 
                   {/* Highlights Card */}
                   <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                       <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
                         <TrendingUp size={14} className="text-[#22C55E]" />
                       </div>
@@ -347,7 +347,7 @@ export function AIAlertBanner() {
                   <div className="bg-[#E6F1FB] border-l-[3px] border-l-[#378ADD]" style={{ padding: '12px 16px', borderRadius: 0 }}>
                     <div className="flex items-center gap-2">
                       <BarChart3 size={16} className="text-[#378ADD]" />
-                      <span className="text-[12px] text-text-primary">5 active · 37h total · 58% productive</span>
+                      <span className="text-[12px] text-text-primary">5 of 5 active · 37h total · avg 7h 29m/person (30d avg: 7h 12m) · 58% productive</span>
                     </div>
                   </div>
                 </>
@@ -357,7 +357,7 @@ export function AIAlertBanner() {
               {selectedHistoryRow === 1 && (
                 <>
                   <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                       <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
                         <AlertTriangle size={14} className="text-[#F86060]" />
                       </div>
@@ -381,7 +381,7 @@ export function AIAlertBanner() {
                   </div>
 
                   <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                       <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
                         <TrendingUp size={14} className="text-[#22C55E]" />
                       </div>
@@ -423,7 +423,7 @@ export function AIAlertBanner() {
               {selectedHistoryRow === 2 && (
                 <>
                   <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                       <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
                         <AlertTriangle size={14} className="text-[#F86060]" />
                       </div>
@@ -449,7 +449,7 @@ export function AIAlertBanner() {
                   </div>
 
                   <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                       <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
                         <Flame size={14} className="text-[#F29937]" />
                       </div>
@@ -466,7 +466,7 @@ export function AIAlertBanner() {
                   </div>
 
                   <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                       <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
                         <TrendingUp size={14} className="text-[#22C55E]" />
                       </div>
@@ -495,11 +495,11 @@ export function AIAlertBanner() {
               )}
 
               {/* Other days - simplified version */}
-              {selectedHistoryRow && selectedHistoryRow > 2 && (
+              {selectedHistoryRow !== null && selectedHistoryRow > 2 && (
                 <>
                   {historyData[selectedHistoryRow].concerns > 0 && (
                     <div className="bg-[#FEF2F2] border-l-[3px] border-l-[#F86060]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                         <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(248,96,96,0.12)' }}>
                           <AlertTriangle size={14} className="text-[#F86060]" />
                         </div>
@@ -514,7 +514,7 @@ export function AIAlertBanner() {
 
                   {historyData[selectedHistoryRow].warnings > 0 && (
                     <div className="bg-[#FFF9F2] border-l-[3px] border-l-[#F29937]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                         <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(242,153,55,0.12)' }}>
                           <Flame size={14} className="text-[#F29937]" />
                         </div>
@@ -529,7 +529,7 @@ export function AIAlertBanner() {
 
                   {historyData[selectedHistoryRow].highlights > 0 && (
                     <div className="bg-[#F0FDF4] border-l-[3px] border-l-[#22C55E]" style={{ padding: '14px 16px', borderRadius: 0 }}>
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2" style={{ marginBottom: '10px' }}>
                         <div className="w-6 h-6 rounded-[6px] flex items-center justify-center" style={{ backgroundColor: 'rgba(34,197,94,0.12)' }}>
                           <TrendingUp size={14} className="text-[#22C55E]" />
                         </div>
@@ -559,7 +559,7 @@ export function AIAlertBanner() {
             </div>
 
             {/* Panel Footer */}
-            <div className="px-6 py-4 border-t border-[#EFF2F4] sticky bottom-0 bg-white">
+            <div className="px-6 py-4 border-t border-[#EFF2F4] flex-shrink-0 bg-white">
               <button className="flex items-center gap-1.5 text-[13px] font-medium text-[#0C62F9] hover:text-[#0A56E0] transition-colors">
                 View full dashboard for this day
                 <ExternalLink size={14} />
